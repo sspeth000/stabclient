@@ -671,6 +671,48 @@
     <div id="preroll"></div>
     <!-- END HIDE FOR CRAZYGAMES -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"bb9dabbca1a04a8bbda4656485610673","r":1,"spa":2}' crossorigin="anonymous"></script>
+
+    <style>
+      #playerSpeedPanel{position:fixed;right:16px;top:16px;z-index:99999;width:220px;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.92);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
+      #playerSpeedPanel .ps-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:8px}
+      #playerSpeedPanel input{width:100%;accent-color:#38bdf8}
+      #playerSpeedPanel .ps-value{font-variant-numeric:tabular-nums;color:#7dd3fc;font-weight:700}
+      #playerSpeedPanel button{border:0;border-radius:6px;background:#334155;color:#fff;padding:2px 8px}
+      #playerSpeedPanel.ps-min{width:auto;padding:8px 10px}
+      #playerSpeedPanel.ps-min .ps-body{display:none}
+      @media(max-width:600px){#playerSpeedPanel{top:10px;right:10px;width:190px}}
+    </style>
+    <div id="playerSpeedPanel" aria-label="Player speed control">
+      <div class="ps-head"><span>Player Speed</span><button id="psMinimize" type="button" aria-label="Minimize">−</button></div>
+      <div class="ps-body">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Movement</span><span class="ps-value" id="psValue">7.0</span></div>
+        <input id="psSlider" type="range" min="1" max="20" step="0.5" value="7">
+        <div style="display:flex;justify-content:space-between;font-size:11px;opacity:.7"><span>1</span><span>20</span></div>
+      </div>
+    </div>
+    <script>
+      (function(){
+        var panel=document.getElementById('playerSpeedPanel');
+        var slider=document.getElementById('psSlider');
+        var value=document.getElementById('psValue');
+        var min=document.getElementById('psMinimize');
+        window.__playerSpeed=7;
+        slider.addEventListener('input',function(){
+          window.__playerSpeed=Number(slider.value);
+          value.textContent=window.__playerSpeed.toFixed(1);
+        });
+        min.addEventListener('click',function(){
+          panel.classList.toggle('ps-min');
+          min.textContent=panel.classList.contains('ps-min')?'+':'−';
+        });
+        function updateVisibility(){
+          var active=!!(window.ce&&window.ce.stageControl&&window.ce.stageControl.myPlayer);
+          panel.style.display=active?'block':'none';
+        }
+        setInterval(updateVisibility,300);
+      })();
+    </script>
+
 </body>
 
 </html>
