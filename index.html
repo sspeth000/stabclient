@@ -706,7 +706,7 @@
           min.textContent=panel.classList.contains('ps-min')?'+':'−';
         });
         function updateVisibility(){
-          var active=!!(window.ce&&window.ce.stageControl&&window.ce.stageControl.myPlayer);
+          var active=!!(window.__stageControl&&window.__stageControl.myPlayer);
           panel.style.display=active?'block':'none';
         }
         setInterval(updateVisibility,300);
