@@ -4,19 +4,14 @@
 
   var menu=document.createElement('section');
   menu.id='scMainMenu';
-  menu.setAttribute('aria-label','StabClient main menu');
+  menu.setAttribute('aria-label','StabClient tools');
   menu.innerHTML=
-    '<div class="sc-head"><span>StabClient Tools</span><button class="sc-close" type="button" aria-label="Hide menu">−</button></div>'+
-    '<div class="sc-layout"><nav class="sc-nav" aria-label="Main menu sections">'+
+    '<div class="sc-head"><div><strong>StabClient Tools</strong><small>Client Assist</small></div><button class="sc-close" type="button" aria-label="Hide menu">−</button></div>'+
+    '<nav class="sc-nav" aria-label="Main menu sections">'+
     '<button type="button" data-tab="home" aria-selected="true">Home</button>'+
-    '<button type="button" data-tab="assist">Auto Assist</button>'+
-    '<button type="button" data-tab="unlock">Unlocks</button>'+
-    '<button type="button" data-tab="fishes">Fish</button>'+
-    '<button type="button" data-tab="weapons">Weapons</button>'+
-    '<button type="button" data-tab="masks">Masks</button>'+
-    '<button type="button" data-tab="hats">Hats</button>'+
-    '<button type="button" data-tab="pearls">Black Pearls</button>'+
-    '</nav><div class="sc-content" id="scMenuContent" aria-live="polite"></div></div>';
+    '<button type="button" data-tab="unlock" aria-selected="false">Unlocks</button>'+
+    '<button type="button" data-tab="pearls" aria-selected="false">Black Pearl Status</button>'+
+    '</nav><div class="sc-content" id="scMenuContent" aria-live="polite"></div>';
 
   var toggle=document.createElement('button');
   toggle.id='scMainMenuToggle';
@@ -25,9 +20,9 @@
   document.body.appendChild(menu);
   document.body.appendChild(toggle);
 
-  var categories={fishes:'Fishes',weapons:'Weapons',masks:'Masks',hats:'Hats',all:'All'};
   var content=menu.querySelector('#scMenuContent');
   var currentTab='home';
+  var pearlTimer=null;
 
   function gameElement(id){return document.getElementById(id);}
   function clickGameControl(id){
@@ -58,7 +53,7 @@
   function toggleRow(label,id){
     return '<div class="sc-toggle-row"><span>'+label+'</span><button type="button" class="sc-check" data-game-toggle="'+id+'" data-label="'+label+'" aria-pressed="false"></button></div>';
   }
-  function refreshAssist(){
+  function refreshHome(){
     ['spikeToggle','akToggle','autoXPToggle'].forEach(function(id){
       var button=content.querySelector('[data-game-toggle="'+id+'"]');
       if(button) updateToggle(button,id);
@@ -66,11 +61,17 @@
     var status=content.querySelector('#scAssistStatus');
     if(status){
       var spike=gameElement('spikeStatus'),xp=gameElement('autoXPStatus'),ak=gameElement('akStatus');
-      status.textContent=[spike&&spike.textContent,xp&&xp.textContent,ak&&ak.textContent].filter(Boolean).join(' · ')||'Waiting for game tools…';
+      status.textContent=[spike&&spike.textContent,xp&&xp.textContent,ak&&ak.textContent].filter(Boolean).join(' · ')||'Game controls are ready when the client loads.';
     }
+    [['scFoodTarget','collectFoodXP'],['scAccessoryTarget','collectAccessories']].forEach(function(pair){
+      var source=gameElement(pair[1]),mirror=content.querySelector('#'+pair[0]);
+      if(source&&mirror&&mirror.checked!==source.checked) mirror.checked=source.checked;
+    });
   }
-  function renderAssist(){
-    content.innerHTML='<h3>Auto Assist</h3><p>These controls are linked to the same settings used by the in-game panel.</p>'+
+  function renderHome(){
+    content.innerHTML=
+      '<div class="sc-welcome"><div class="sc-eyebrow">WELCOME BACK</div><h2>Your match, your settings.</h2><p>Quick access to StabClient tools, all in one compact panel.</p></div>'+
+      '<div class="sc-section-label">SPIKE PROTECTION</div>'+
       toggleRow('Spike Immunity','spikeToggle')+
       '<div class="sc-section-label">AUTO ASSIST</div>'+
       toggleRow('Auto Kill','akToggle')+
@@ -85,7 +86,7 @@
       '<div class="sc-note" id="scAssistStatus">Waiting for game tools…</div>';
 
     [['scFoodTarget','collectFoodXP'],['scAccessoryTarget','collectAccessories']].forEach(function(pair){
-      var source=gameElement(pair[1]),mirror=gameElement(pair[0]);
+      var source=gameElement(pair[1]),mirror=content.querySelector('#'+pair[0]);
       if(source&&mirror) mirror.checked=source.checked;
       if(mirror) mirror.addEventListener('change',function(){
         var target=gameElement(pair[1]);
@@ -93,7 +94,7 @@
       });
     });
     [['scSpeed','psSlider'],['scKillDelay','akDelay'],['scCollectDelay','collectDelay']].forEach(function(pair){
-      var source=gameElement(pair[1]),mirror=gameElement(pair[0]);
+      var source=gameElement(pair[1]),mirror=content.querySelector('#'+pair[0]);
       if(source&&mirror) mirror.value=source.value;
       if(mirror) mirror.addEventListener('input',function(){setGameInput(pair[1],mirror.value);});
     });
@@ -102,10 +103,10 @@
       button.addEventListener('click',function(){
         clickGameControl(button.getAttribute('data-game-toggle'));
         updateToggle(button,button.getAttribute('data-game-toggle'));
-        refreshAssist();
+        refreshHome();
       });
     });
-    refreshAssist();
+    refreshHome();
   }
 
   function applyUnlocks(collection){
@@ -114,13 +115,21 @@
       throw new Error('Game data is not ready yet. Wait for the game to finish loading.');
     return api.applyLocalUnlocks(collection);
   }
-  function renderUnlocks(collection){
-    var title=categories[collection]||'All';
-    content.innerHTML='<h3>'+title+' Unlocks</h3><p>Apply a local collection unlock preview using the game client’s supported local-unlock feature.</p>'+
-      '<div class="sc-note">This changes local browser game data only. Server-owned account progress and Black Pearls are not modified.</div>'+
-      '<button type="button" class="sc-primary" id="scApplyUnlocks">Apply '+title.toLowerCase()+' unlocks</button>'+
+  function renderUnlocks(){
+    content.innerHTML=
+      '<h2>Unlocks</h2><p>Choose a collection to unlock locally in this browser.</p>'+
+      '<div class="sc-note">This is a local preview only. It does not change server-owned account progress or Black Pearls.</div>'+
+      '<div class="sc-section-label">COLLECTION</div>'+
+      '<label class="sc-choice"><input type="radio" name="scCollection" value="fishes"> Fishes</label>'+
+      '<label class="sc-choice"><input type="radio" name="scCollection" value="weapons"> Weapons</label>'+
+      '<label class="sc-choice"><input type="radio" name="scCollection" value="masks"> Masks</label>'+
+      '<label class="sc-choice"><input type="radio" name="scCollection" value="hats"> Hats</label>'+
+      '<label class="sc-choice"><input type="radio" name="scCollection" value="all" checked> All collections</label>'+
+      '<button type="button" class="sc-primary" id="scApplyUnlocks">Apply local unlocks</button>'+
       '<div class="sc-note" id="scUnlockStatus" role="status">Ready when game data is loaded.</div>';
     content.querySelector('#scApplyUnlocks').addEventListener('click',function(){
+      var selected=content.querySelector('input[name="scCollection"]:checked');
+      var collection=selected?selected.value:'all';
       var status=content.querySelector('#scUnlockStatus');
       try{
         var changed=applyUnlocks(collection);
@@ -135,25 +144,23 @@
       ?Math.floor(inventory.numPearls).toLocaleString():'Waiting for account data…';
   }
   function renderPearls(){
-    content.innerHTML='<h3>Black Pearls</h3><p>Your current account balance, read directly from the loaded game data.</p>'+
-      '<div class="sc-pearl-value" id="scPearlValue"></div>'+
-      '<div class="sc-note">Read-only. Black Pearls are server-managed, so this menu does not offer an edit field.</div>';
-    content.querySelector('#scPearlValue').textContent=pearlAmount();
+    content.innerHTML='<div class="sc-eyebrow">ACCOUNT</div><h2>Black Pearl Status</h2><p>Your current balance, read from the loaded game account.</p>'+
+      '<div class="sc-pearl-card"><span>BLACK PEARLS</span><strong id="scPearlValue"></strong><small>Live account balance</small></div>'+
+      '<div class="sc-note">Read-only. Black Pearls are managed by the game server, so this menu does not offer an edit control.</div>';
+    updatePearls();
+  }
+  function updatePearls(){
+    var value=content.querySelector('#scPearlValue');
+    if(value) value.textContent=pearlAmount();
   }
   function showTab(name){
     currentTab=name;
     menu.querySelectorAll('[data-tab]').forEach(function(button){
       button.setAttribute('aria-selected',String(button.getAttribute('data-tab')===name));
     });
-    if(name==='assist') renderAssist();
-    else if(name==='unlock') renderUnlocks('all');
-    else if(categories[name]) renderUnlocks(name);
+    if(name==='unlock') renderUnlocks();
     else if(name==='pearls') renderPearls();
-    else content.innerHTML='<h3>StabClient Tools</h3><p>The main-menu controls now match the in-game Assist panel.</p>'+
-      '<div class="sc-note">Auto Assist settings can be prepared here before entering a match. Unlocks remain local to this browser. Black Pearls are displayed as a read-only account value.</div>'+
-      '<button type="button" class="sc-primary" id="scGoAssist">Open Auto Assist</button>';
-    var go=content.querySelector('#scGoAssist');
-    if(go) go.addEventListener('click',function(){showTab('assist');});
+    else renderHome();
   }
   menu.querySelectorAll('[data-tab]').forEach(function(button){
     button.addEventListener('click',function(){showTab(button.getAttribute('data-tab'));});
@@ -187,11 +194,8 @@
   window.addEventListener('resize',syncToTitleMenu);
   setInterval(function(){
     syncToTitleMenu();
-    if(currentTab==='assist') refreshAssist();
-    if(currentTab==='pearls'){
-      var value=content.querySelector('#scPearlValue');
-      if(value) value.textContent=pearlAmount();
-    }
+    if(currentTab==='home') refreshHome();
+    if(currentTab==='pearls') updatePearls();
   },500);
   syncToTitleMenu();
 })();
