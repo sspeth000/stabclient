@@ -682,8 +682,8 @@
       #playerSpeedPanel.ps-min .ps-body{display:none}
       @media(max-width:600px){#playerSpeedPanel{bottom:10px;top:auto;right:10px;width:190px}}
     </style>
-    <div id="playerSpeedPanel" aria-label="Player speed control">
-      <div class="ps-head"><span>Player Speed</span><button id="psMinimize" type="button" aria-label="Minimize">−</button></div>
+    <div id="playerSpeedPanel" aria-label="StabClient Tools panel">
+      <div class="ps-head"><span>StabClient Tools</span><button id="psMinimize" type="button" aria-label="Minimize">−</button></div>
       <div class="ps-body">
         <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Movement</span><span class="ps-value" id="psValue">7.0</span></div>
         <input id="psSlider" type="range" min="1" max="20" step="0.5" value="7">
@@ -813,8 +813,14 @@
         },50);
 
         function updateVisibility(){
-          var active=!!(window.__stageControl&&window.__stageControl.myPlayer);
-          panel.style.display=active?'block':'none';
+          var stage=window.__stageControl;
+          var logic=stage&&stage.broadcaster&&stage.broadcaster.gameLogic;
+          var me=logic&&logic.players&&stage.myPlayer&&logic.players[stage.myPlayer.id];
+          var survivors=logic&&logic.survivors;
+          // Show only while the local player is active in the current match.
+          // Hides after elimination and reappears when the next match begins.
+          var inMatch=!!(me&&Array.isArray(survivors)&&survivors.indexOf(me)!==-1);
+          panel.style.display=inMatch?'block':'none';
         }
         setInterval(updateVisibility,300);
       })();
