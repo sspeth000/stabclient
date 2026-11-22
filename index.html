@@ -851,8 +851,9 @@
         <label class="sc-choice"><input type="radio" name="scCollection" value="hats"> Hats</label>
         <label class="sc-choice"><input type="radio" name="scCollection" value="all" checked> All</label>
         <div style="border-top:1px solid rgba(255,255,255,.16);margin:10px 0"></div>
-        <div style="font-weight:700">Black Pearls</div>
-        <div class="sc-status">Account currency is server-managed. This client menu cannot legitimately change the balance.</div>
+        <label for="scBlackPearlBalance" style="display:block;font-weight:700;margin-bottom:5px">Black Pearls</label>
+        <input id="scBlackPearlBalance" type="text" value="Loading…" readonly aria-label="Current Black Pearl balance" />
+        <div class="sc-status">Live account balance (read-only).</div>
         <button id="scApply" class="sc-action" type="button">Apply local unlocks</button>
         <div id="scStatus" class="sc-status" role="status" aria-live="polite">Unlocks affect this browser's local game data only. Account progress and Black Pearls are server-managed.</div>
       </div>
@@ -863,7 +864,19 @@
         var minimize=document.getElementById('scMinimize');
         var apply=document.getElementById('scApply');
         var status=document.getElementById('scStatus');
+        var pearlBalance=document.getElementById('scBlackPearlBalance');
         var choices=panel.querySelectorAll('input[name="scCollection"]');
+
+        function updateBlackPearlBalance(){
+          var manager=window.StabClient&&window.StabClient.userManager;
+          var inventory=manager&&manager.inventory;
+          var amount=inventory&&inventory.numPearls;
+          if(typeof amount==='number'&&Number.isFinite(amount)){
+            pearlBalance.value=Math.floor(amount).toLocaleString();
+          }else{
+            pearlBalance.value='Waiting for account data…';
+          }
+        }
 
         function applyLocalUnlocks(collection){
           var api=window.StabClient;
@@ -898,7 +911,9 @@
           panel.style.setProperty('pointer-events','auto','important');
         }
         updateMenuVisibility();
+        updateBlackPearlBalance();
         setInterval(updateMenuVisibility,500);
+        setInterval(updateBlackPearlBalance,500);
       })();
     </script>
 
