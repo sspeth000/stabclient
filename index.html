@@ -851,10 +851,10 @@
         <label class="sc-choice"><input type="radio" name="scCollection" value="hats"> Hats</label>
         <label class="sc-choice"><input type="radio" name="scCollection" value="all" checked> All</label>
         <div style="border-top:1px solid rgba(255,255,255,.16);margin:10px 0"></div>
-        <label for="scPearls" style="font-weight:700">Black Pearls</label>
-        <input id="scPearls" type="number" min="0" step="1" inputmode="numeric" placeholder="Enter amount">
-        <button id="scApply" class="sc-action" type="button">Try local preview</button>
-        <div id="scStatus" class="sc-status" role="status" aria-live="polite">Preview only. Your account and server data are unchanged.</div>
+        <div style="font-weight:700">Black Pearls</div>
+        <div class="sc-status">Account currency is server-managed. This client menu cannot legitimately change the balance.</div>
+        <button id="scApply" class="sc-action" type="button">Apply local unlocks</button>
+        <div id="scStatus" class="sc-status" role="status" aria-live="polite">Unlocks are saved to this browser's local game data. A reload applies them.</div>
       </div>
     </div>
     <script>
@@ -863,8 +863,25 @@
         var minimize=document.getElementById('scMinimize');
         var apply=document.getElementById('scApply');
         var status=document.getElementById('scStatus');
-        var pearls=document.getElementById('scPearls');
         var choices=panel.querySelectorAll('input[name="scCollection"]');
+
+        function saveLocalData(key,value){
+          var serialized=JSON.stringify(value);
+          localStorage.setItem(key,serialized);
+          document.cookie=key+'='+serialized+';expires='+new Date(Date.now()+30*86400000).toUTCString()+';path=/;SameSite=Lax';
+        }
+
+        function applyLocalUnlocks(collection){
+          var count=128;
+          if(collection==='fishes'||collection==='all')
+            saveLocalData('unlockedBodies',Array(count).fill(true));
+          if(collection==='weapons'||collection==='all')
+            saveLocalData('unlockedSpears',Array(count).fill(3));
+          if(collection==='masks'||collection==='all')
+            saveLocalData('unlockedFaces',Array(count).fill(true));
+          if(collection==='hats'||collection==='all')
+            saveLocalData('unlockedHats',Array(count).fill(true));
+        }
 
         minimize.addEventListener('click',function(){
           panel.classList.toggle('sc-min');
@@ -873,21 +890,14 @@
 
         apply.addEventListener('click',function(){
           var selected=panel.querySelector('input[name="scCollection"]:checked');
-          var amount=pearls.value.trim();
-          if(amount!==''&&(!Number.isSafeInteger(Number(amount))||Number(amount)<0)){
-            status.textContent='Enter a whole number of 0 or greater.';
-            return;
+          var collection=selected?selected.value:'all';
+          try{
+            applyLocalUnlocks(collection);
+            status.textContent='Saved '+collection+' unlocks to this browser. Reloading the game now…';
+            window.location.reload();
+          }catch(error){
+            status.textContent='Could not save local game data: '+error.message;
           }
-          var preview={
-            collection:selected?selected.value:'all',
-            blackPearls:amount===''?null:Number(amount),
-            previewOnly:true,
-            updatedAt:Date.now()
-          };
-          // Deliberately isolated local preview state. No network requests,
-          // account balance writes, or server unlock claims are made here.
-          window.__stabClientLocalPreview=preview;
-          status.textContent='Local preview selection saved: '+preview.collection+'. '+(amount===''?'No pearl amount entered.':'Test pearl value: '+preview.blackPearls+'.')+' Server/account unchanged.';
         });
 
         function updateMenuVisibility(){
