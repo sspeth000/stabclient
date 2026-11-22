@@ -1,0 +1,22 @@
+/* StabClient main-menu overlay */
+#scMainMenu,#scMainMenuToggle{font-family:Roboto,Arial,sans-serif;box-sizing:border-box}
+#scMainMenu *,#scMainMenuToggle *{box-sizing:border-box}
+#scMainMenu{position:fixed;z-index:100000;right:16px;top:16px;width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 32px);display:none;overflow:hidden;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.95);color:#fff;box-shadow:0 8px 28px rgba(0,0,0,.4);backdrop-filter:blur(8px)}
+#scMainMenu .sc-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.12);font-weight:700}
+#scMainMenu button,#scMainMenu input{font:inherit}
+#scMainMenu button{border:0;border-radius:7px;background:#334155;color:#fff;padding:7px 10px;cursor:pointer}
+#scMainMenu button:hover{background:#475569}
+#scMainMenu .sc-close{padding:2px 9px;font-size:18px}
+#scMainMenu .sc-layout{display:grid;grid-template-columns:112px 1fr;min-height:240px;max-height:calc(100vh - 100px)}
+#scMainMenu .sc-nav{display:flex;flex-direction:column;gap:5px;padding:10px;border-right:1px solid rgba(255,255,255,.12);overflow:auto}
+#scMainMenu .sc-nav button{text-align:left;background:transparent;color:#cbd5e1;padding:8px}
+#scMainMenu .sc-nav button[aria-selected="true"]{background:#0f3b55;color:#7dd3fc}
+#scMainMenu .sc-content{padding:14px;overflow:auto;min-width:0}
+#scMainMenu .sc-content h3{font-size:16px;margin:0 0 8px}
+#scMainMenu .sc-content p{font-size:12px;line-height:1.5;color:#cbd5e1;margin:0 0 12px}
+#scMainMenu .sc-note{padding:9px;border-radius:8px;background:rgba(51,65,85,.55);font-size:12px;color:#cbd5e1}
+#scMainMenu .sc-field{display:block;font-size:12px;color:#cbd5e1;margin:12px 0 5px}
+#scMainMenu input{width:100%;padding:8px;border:1px solid #475569;border-radius:7px;background:#0f172a;color:#fff;outline:none}
+#scMainMenu .sc-preview{margin-top:8px;color:#7dd3fc;font-size:12px;font-variant-numeric:tabular-nums}
+#scMainMenuToggle{position:fixed;z-index:100001;right:16px;top:16px;display:none;padding:9px 12px;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(17,24,39,.95);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer}
+@media(max-width:600px){#scMainMenu{right:10px;top:10px;width:min(350px,calc(100vw - 20px));max-height:calc(100vh - 20px)}#scMainMenuToggle{right:10px;top:10px}}
