@@ -28,28 +28,30 @@
   function renderUnlocks(){
     content.innerHTML=
       '<div class="sc-eyebrow">COLLECTION</div><h1>Unlocks</h1>'+
-      '<p>Choose which collection you want to work with.</p>'+
-      '<div class="sc-collection-grid">'+
-      '<button type="button" data-collection="fishes">Fish</button>'+
-      '<button type="button" data-collection="weapons">Weapons</button>'+
-      '<button type="button" data-collection="masks">Masks</button>'+
-      '<button type="button" data-collection="hats">Hats</button>'+
-      '<button type="button" data-collection="all">All collections</button></div>'+
-      '<div class="sc-note" id="scUnlockStatus" role="status">Select a collection to check whether local unlock controls are available.</div>';
-    content.querySelectorAll('[data-collection]').forEach(function(button){
-      button.addEventListener('click',function(){
+      '<p>Choose which collection to unlock.</p>'+
+      '<div class="sc-unlock-options">'+
+      '<label><input type="radio" name="scMenuCollection" value="fishes"> Fish</label>'+
+      '<label><input type="radio" name="scMenuCollection" value="weapons"> Weapons</label>'+
+      '<label><input type="radio" name="scMenuCollection" value="masks"> Masks</label>'+
+      '<label><input type="radio" name="scMenuCollection" value="hats"> Hats</label>'+
+      '<label><input type="radio" name="scMenuCollection" value="all" checked> All</label>'+
+      '</div>'+
+      '<button type="button" class="sc-apply-unlocks" id="scApplyUnlocks">Apply local unlocks</button>'+
+      '<div class="sc-note" id="scUnlockStatus" role="status" aria-live="polite">Select a collection, then apply your unlocks.</div>';
+    content.querySelector('#scApplyUnlocks').addEventListener('click',function(){
+      var selected=content.querySelector('input[name="scMenuCollection"]:checked');
+      var collection=selected?selected.value:'all';
+      var status=content.querySelector('#scUnlockStatus');
+      try{
         var api=window.StabClient;
-        if(!api||typeof api.applyLocalUnlocks!=='function'){
-          content.querySelector('#scUnlockStatus').textContent='Local unlock controls are not connected in this build yet. No account data was changed.';
-          return;
-        }
-        try{
-          var result=api.applyLocalUnlocks(button.dataset.collection);
-          content.querySelector('#scUnlockStatus').textContent='Local unlocks applied: '+JSON.stringify(result)+'.';
-        }catch(error){
-          content.querySelector('#scUnlockStatus').textContent='Could not apply local unlocks: '+error.message;
-        }
-      });
+        if(!api||typeof api.applyLocalUnlocks!=='function')
+          throw new Error('StabClient unlock function is not available yet. Wait for the game to finish loading.');
+        var result=api.applyLocalUnlocks(collection);
+        status.textContent='Unlock function completed for '+collection+'.'+
+          (result&&typeof result==='object'?' Result: '+JSON.stringify(result):'');
+      }catch(error){
+        status.textContent='Could not apply unlocks: '+error.message;
+      }
     });
   }
   function pearlAmount(){
