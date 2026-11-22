@@ -828,7 +828,7 @@
 
 
     <style>
-      #stabClientCollectionPanel{position:fixed;right:16px;top:16px;z-index:100000;width:230px;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.94);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
+      #stabClientCollectionPanel{position:fixed;right:16px;top:16px;z-index:2147483647;pointer-events:auto;width:230px;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.94);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
       #stabClientCollectionPanel .sc-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:10px}
       #stabClientCollectionPanel button{border:0;border-radius:6px;background:#334155;color:#fff;padding:7px 9px;font:inherit;cursor:pointer}
       #stabClientCollectionPanel .sc-choice{display:flex;align-items:center;gap:8px;padding:7px 8px;margin:3px 0;border-radius:6px;background:rgba(51,65,85,.72);cursor:pointer}
@@ -890,14 +890,14 @@
           status.textContent='Local preview selection saved: '+preview.collection+'. '+(amount===''?'No pearl amount entered.':'Test pearl value: '+preview.blackPearls+'.')+' Server/account unchanged.';
         });
 
-        function isVisible(element){
-          if(!element) return false;
-          var style=window.getComputedStyle(element);
-          return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity||1)>0;
-        }
         function updateMenuVisibility(){
           var title=document.getElementById('titleMenu');
-          panel.style.display=isVisible(title)?'block':'none';
+          // The game may animate/fade the title menu, so do not use opacity
+          // as the visibility signal. Only hide when it is explicitly removed.
+          var titleHidden=!title||title.hidden||title.style.display==='none'||
+            window.getComputedStyle(title).display==='none';
+          panel.style.setProperty('display',titleHidden?'none':'block','important');
+          panel.style.setProperty('pointer-events','auto','important');
         }
         updateMenuVisibility();
         setInterval(updateMenuVisibility,500);
