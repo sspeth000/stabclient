@@ -689,16 +689,16 @@
       <div class="ps-body">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
           <span style="font-weight:700">Spike Immunity</span>
-          <button id="spikeToggle" type="button" aria-pressed="false">OFF</button>
+          <button id="spikeToggle" type="button" aria-label="Spike Immunity off" title="Spike Immunity off" aria-pressed="false"></button>
         </div>
         <div style="font-weight:700;margin-bottom:6px">AUTO ASSIST</div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px">
           <span style="font-weight:700">Auto Kill</span>
-          <button id="akToggle" type="button" aria-pressed="false">OFF</button>
+          <button id="akToggle" type="button" aria-label="Auto Kill off" title="Auto Kill off" aria-pressed="false"></button>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px">
           <span style="font-weight:700">Auto Collect</span>
-          <button id="autoXPToggle" type="button" aria-pressed="false">OFF</button>
+          <button id="autoXPToggle" type="button" aria-label="Auto Collect off" title="Auto Collect off" aria-pressed="false"></button>
         </div>
         <div style="font-weight:700;margin:12px 0 5px">AUTO COLLECT TARGETS</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px">
@@ -819,7 +819,9 @@
 
         autoXPToggle.addEventListener('click',function(){
           autoXPEnabled=!autoXPEnabled;
-          autoXPToggle.textContent=autoXPEnabled?'ON':'OFF';
+          autoXPToggle.textContent=autoXPEnabled?'✓':'';
+          autoXPToggle.setAttribute('aria-label',autoXPEnabled?'Auto Collect on':'Auto Collect off');
+          autoXPToggle.title=autoXPEnabled?'Auto Collect on':'Auto Collect off';
           autoXPToggle.setAttribute('aria-pressed',String(autoXPEnabled));
           autoXPToggle.style.background=autoXPEnabled?'#166534':'#334155';
           if(!autoXPEnabled){
@@ -836,13 +838,17 @@
           if(autoKillEnabled) sources.push('Auto-Kill');
           if(autoXPEnabled) sources.push('Auto Collect');
           spikeStatus.textContent=active?'Spike protection: active'+(sources.length?' ('+sources.join(' + ')+')':''):'Spike protection: off';
-          spikeToggle.textContent=spikeImmunityEnabled?'ON':'OFF';
+          spikeToggle.textContent=spikeImmunityEnabled?'✓':'';
+          spikeToggle.setAttribute('aria-label',spikeImmunityEnabled?'Spike Immunity on':'Spike Immunity off');
+          spikeToggle.title=spikeImmunityEnabled?'Spike Immunity on':'Spike Immunity off';
           spikeToggle.setAttribute('aria-pressed',String(spikeImmunityEnabled));
           spikeToggle.style.background=spikeImmunityEnabled?'#166534':'#334155';
         }
         akToggle.addEventListener('click',function(){
           autoKillEnabled=!autoKillEnabled;
-          akToggle.textContent=autoKillEnabled?'ON':'OFF';
+          akToggle.textContent=autoKillEnabled?'✓':'';
+          akToggle.setAttribute('aria-label',autoKillEnabled?'Auto Kill on':'Auto Kill off');
+          akToggle.title=autoKillEnabled?'Auto Kill on':'Auto Kill off';
           akToggle.setAttribute('aria-pressed',String(autoKillEnabled));
           akToggle.style.background=autoKillEnabled?'#166534':'#334155';
           akStatus.textContent=autoKillEnabled?'Local client targeting active':'Targets: server-controlled clients';
@@ -1034,11 +1040,28 @@
 
 
     <style>
-      /* Use squircles for every circular control in the custom client panels. */
-      #playerSpeedPanel button,
-      #playerSpeedPanel.ps-min,
+      /* Clearly rounded-square silhouettes, not circles or pills. */
+      #playerSpeedPanel button {
+        width:30px;
+        height:30px;
+        min-width:30px;
+        flex:0 0 30px;
+        box-sizing:border-box;
+        border-radius:8px !important;
+        border:1.5px solid rgba(255,255,255,.42);
+        font-size:17px;
+        font-weight:800;
+        line-height:1;
+      }
+      #playerSpeedPanel.ps-min {
+        border-radius:12px !important;
+      }
       #playerSpeedPanel.ps-min #psMinimize {
-        border-radius: 11px !important;
+        width:42px;
+        height:42px;
+        min-width:42px;
+        flex-basis:42px;
+        border-radius:12px !important;
       }
     </style>
 
