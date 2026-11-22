@@ -785,7 +785,7 @@
           }
           if(!autoKillEnabled) return;
           var now=Date.now();
-          if(now-lastBotTeleport<400) return;
+          if(now-lastBotTeleport<100) return;
 
           var target=null,nearest=Infinity;
           for(var i=0;i<survivors.length;i++){
@@ -810,7 +810,7 @@
           me.speed=0;
           lastBotTeleport=now;
           akStatus.textContent='Targeting server-controlled clients';
-        },120);
+        },50);
 
         function updateVisibility(){
           var active=!!(window.__stageControl&&window.__stageControl.myPlayer);
