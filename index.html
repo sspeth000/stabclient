@@ -689,14 +689,14 @@
         <input id="psSlider" type="range" min="1" max="20" step="0.5" value="7">
         <div style="display:flex;justify-content:space-between;font-size:11px;opacity:.7"><span>1</span><span>20</span></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:8px">
-          <span style="font-weight:700">Client Auto-Kill</span>
+          <span style="font-weight:700">Player Auto-Kill</span>
           <button id="akToggle" type="button" aria-pressed="false">OFF</button>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px">
           <span style="font-weight:700">Spike Immunity</span>
           <button id="spikeToggle" type="button" aria-pressed="false">OFF</button>
         </div>
-        <div id="akStatus" style="font-size:11px;opacity:.7;margin-top:4px">Targets: server-controlled clients</div>
+        <div id="akStatus" style="font-size:11px;opacity:.7;margin-top:4px">Targets: players</div>
         <div id="spikeStatus" style="font-size:11px;opacity:.7;margin-top:2px">Spike protection: off</div>
       </div>
     </div>
@@ -723,7 +723,7 @@
         var spikeStatus=document.getElementById('spikeStatus');
         var autoKillEnabled=false;
         var spikeImmunityEnabled=false;
-        var lastBotTeleport=0;
+        var lastPlayerTeleport=0;
         function updateSpikeStatus(){
           var active=autoKillEnabled||spikeImmunityEnabled;
           spikeStatus.textContent=active?'Spike protection: active'+(autoKillEnabled?' (Auto-Kill)':''):'Spike protection: off';
@@ -736,7 +736,7 @@
           akToggle.textContent=autoKillEnabled?'ON':'OFF';
           akToggle.setAttribute('aria-pressed',String(autoKillEnabled));
           akToggle.style.background=autoKillEnabled?'#166534':'#334155';
-          akStatus.textContent=autoKillEnabled?'Local client targeting active':'Targets: server-controlled clients';
+          akStatus.textContent=autoKillEnabled?'Local player targeting active':'Targets: server-controlled clients';
           updateSpikeStatus();
         });
         spikeToggle.addEventListener('click',function(){
@@ -789,27 +789,29 @@
 
           var target=null,nearest=Infinity;
           for(var i=0;i<survivors.length;i++){
-            var bot=survivors[i];
-            if(!bot||bot===me||!bot.ai||bot.blinkingTimeout>now) continue;
-            var dx=bot.x-me.x,dy=bot.y-me.y;
+            var player=survivors[i];
+            if(!player||player===me||!player.ai||player.blinkingTimeout>now) continue;
+            var dx=player.x-me.x,dy=player.y-me.y;
             var distance=dx*dx+dy*dy;
-            if(distance<nearest){nearest=distance;target=bot;}
+            if(distance<nearest){nearest=distance;target=player;}
           }
           if(!target) {
-            akStatus.textContent='Waiting for active clients…';
+            akStatus.textContent='Waiting for active players…';
             return;
           }
 
-          // Place the local simulation player just behind the bot and face it.
-          var angle=Math.atan2(target.y-me.y,target.x-me.x);
+          // Position the local simulation player in front of the selected player,
+          // using that player's facing direction, then face back toward them.
+          var heading=(Number(target.direction)||0)*Math.PI/180;
+          var angle=heading+Math.PI;
           var offset=55;
           var roomW=logic.roomW||Infinity,roomH=logic.roomH||Infinity;
-          me.x=Math.max(12,Math.min(roomW-12,target.x-Math.cos(angle)*offset));
-          me.y=Math.max(12,Math.min(roomH-12,target.y-Math.sin(angle)*offset));
+          me.x=Math.max(12,Math.min(roomW-12,target.x+Math.cos(heading)*offset));
+          me.y=Math.max(12,Math.min(roomH-12,target.y+Math.sin(heading)*offset));
           me.direction=angle*180/Math.PI;
           me.speed=0;
           lastBotTeleport=now;
-          akStatus.textContent='Targeting server-controlled clients';
+          akStatus.textContent='Targeting players';
         },50);
 
         function updateVisibility(){
