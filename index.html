@@ -677,13 +677,15 @@
       #playerSpeedPanel .ps-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:8px}
       #playerSpeedPanel input{width:100%;accent-color:#38bdf8}
       #playerSpeedPanel .ps-value{font-variant-numeric:tabular-nums;color:#7dd3fc;font-weight:700}
-      #playerSpeedPanel button{border:0;border-radius:6px;background:#334155;color:#fff;padding:2px 8px}
-      #playerSpeedPanel.ps-min{width:auto;padding:8px 10px}
-      #playerSpeedPanel.ps-min .ps-body{display:none}
+      #playerSpeedPanel button{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:#334155;color:#fff;padding:0;font-size:18px;line-height:1;cursor:pointer}
+      #playerSpeedPanel.ps-min{width:42px;height:42px;box-sizing:border-box;padding:2px;border:0;border-radius:50%;background:transparent;box-shadow:none}
+      #playerSpeedPanel.ps-min .ps-head{justify-content:center;margin:0;width:100%;height:100%}
+      #playerSpeedPanel.ps-min .ps-head span,#playerSpeedPanel.ps-min .ps-body{display:none}
+      #playerSpeedPanel.ps-min #psMinimize{width:42px;height:42px;flex-basis:42px;border:1px solid rgba(255,255,255,.35);background:#0f172a;box-shadow:0 4px 14px rgba(0,0,0,.35);font-size:25px}
       @media(max-width:600px){#playerSpeedPanel{bottom:10px;top:auto;right:10px;width:190px}}
     </style>
     <div id="playerSpeedPanel" aria-label="StabClient Tools panel">
-      <div class="ps-head"><span>Stabfish Client Assist</span><button id="psMinimize" type="button" aria-label="Minimize">−</button></div>
+      <div class="ps-head"><span>Stabfish Client Assist</span><button id="psMinimize" type="button" aria-label="Minimize panel">−</button></div>
       <div class="ps-body">
         <div style="font-weight:700;margin-bottom:6px">AUTO OPTIONS</div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px">
@@ -727,6 +729,7 @@
         min.addEventListener('click',function(){
           panel.classList.toggle('ps-min');
           min.textContent=panel.classList.contains('ps-min')?'+':'−';
+          min.setAttribute('aria-label',panel.classList.contains('ps-min')?'Expand panel':'Minimize panel');
         });
 
         // Local simulation helper: only server-controlled client objects are eligible.
