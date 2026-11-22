@@ -750,8 +750,17 @@
           var logic=broadcaster&&broadcaster.gameLogic;
           var me=logic&&logic.players&&stage.myPlayer&&logic.players[stage.myPlayer.id];
           var survivors=logic&&logic.survivors;
-          if(!Array.isArray(survivors)||!me||survivors.indexOf(me)<0) return;
-          if(logic&&!logic.__localSpikeImmunityWrapped){
+          if(!logic||!me) return;
+
+          // Reinforce the game's own temporary invulnerability while protection is enabled.
+          // Refresh before the survival check so respawns are protected as soon as they re-enter.
+          if(autoKillEnabled||spikeImmunityEnabled){
+            var protectUntil=Date.now()+500;
+            me.invincibleTimeout=Math.max(me.invincibleTimeout||0,protectUntil);
+          }
+
+          if(!Array.isArray(survivors)||survivors.indexOf(me)<0) return;
+          if(!logic.__localSpikeImmunityWrapped){
             var currentStage=window.__stageControl;
             var localPlayer=currentStage&&currentStage.myPlayer&&logic.players&&logic.players[currentStage.myPlayer.id];
             if(typeof logic._getKiller==='function'){
