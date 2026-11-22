@@ -689,14 +689,14 @@
         <input id="psSlider" type="range" min="1" max="20" step="0.5" value="7">
         <div style="display:flex;justify-content:space-between;font-size:11px;opacity:.7"><span>1</span><span>20</span></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:8px">
-          <span style="font-weight:700">Bot Auto-Kill</span>
+          <span style="font-weight:700">Client Auto-Kill</span>
           <button id="akToggle" type="button" aria-pressed="false">OFF</button>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px">
           <span style="font-weight:700">Spike Immunity</span>
           <button id="spikeToggle" type="button" aria-pressed="false">OFF</button>
         </div>
-        <div id="akStatus" style="font-size:11px;opacity:.7;margin-top:4px">Targets: bots only</div>
+        <div id="akStatus" style="font-size:11px;opacity:.7;margin-top:4px">Targets: server-controlled clients</div>
         <div id="spikeStatus" style="font-size:11px;opacity:.7;margin-top:2px">Spike protection: off</div>
       </div>
     </div>
@@ -716,7 +716,7 @@
           min.textContent=panel.classList.contains('ps-min')?'+':'−';
         });
 
-        // Local simulation helper: only AI-controlled bot objects are eligible.
+        // Local simulation helper: only server-controlled client objects are eligible.
         var akToggle=document.getElementById('akToggle');
         var akStatus=document.getElementById('akStatus');
         var spikeToggle=document.getElementById('spikeToggle');
@@ -736,7 +736,7 @@
           akToggle.textContent=autoKillEnabled?'ON':'OFF';
           akToggle.setAttribute('aria-pressed',String(autoKillEnabled));
           akToggle.style.background=autoKillEnabled?'#166534':'#334155';
-          akStatus.textContent=autoKillEnabled?'Local bot targeting active':'Targets: bots only';
+          akStatus.textContent=autoKillEnabled?'Local client targeting active':'Targets: server-controlled clients';
           updateSpikeStatus();
         });
         spikeToggle.addEventListener('click',function(){
@@ -787,7 +787,7 @@
             if(distance<nearest){nearest=distance;target=bot;}
           }
           if(!target) {
-            akStatus.textContent='Waiting for living bots…';
+            akStatus.textContent='Waiting for active clients…';
             return;
           }
 
@@ -800,7 +800,7 @@
           me.direction=angle*180/Math.PI;
           me.speed=0;
           lastBotTeleport=now;
-          akStatus.textContent='Targeting bots only';
+          akStatus.textContent='Targeting server-controlled clients';
         },120);
 
         function updateVisibility(){
