@@ -777,10 +777,11 @@
           var now=Date.now();
           if(now-lastAutoXPTeleport>=100){
             // Use the same local simulation-position technique as Auto Kill.
+            var angle=Math.atan2(nearest.y-me.y,nearest.x-me.x);
             var roomW=logic.roomW||Infinity,roomH=logic.roomH||Infinity;
             me.x=Math.max(12,Math.min(roomW-12,nearest.x));
             me.y=Math.max(12,Math.min(roomH-12,nearest.y));
-            me.direction=Math.atan2(nearest.y-me.y,nearest.x-me.x)*180/Math.PI;
+            me.direction=angle*180/Math.PI;
             me.speed=0;
             lastAutoXPTeleport=now;
           }
