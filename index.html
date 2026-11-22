@@ -751,14 +751,27 @@
           var me=logic&&logic.players&&stage.myPlayer&&logic.players[stage.myPlayer.id];
           var survivors=logic&&logic.survivors;
           if(!Array.isArray(survivors)||!me||survivors.indexOf(me)<0) return;
-          if(logic&&typeof logic._getPufferfishKiller==='function'&&!logic.__localSpikeImmunityWrapped){
-            var originalSpikeCheck=logic._getPufferfishKiller;
-            logic._getPufferfishKiller=function(victim){
-              var currentStage=window.__stageControl;
-              var localPlayer=currentStage&&currentStage.myPlayer&&this.players&&this.players[currentStage.myPlayer.id];
-              if(victim===localPlayer&&(autoKillEnabled||spikeImmunityEnabled)) return null;
-              return originalSpikeCheck.call(this,victim);
-            };
+          if(logic&&!logic.__localSpikeImmunityWrapped){
+            var currentStage=window.__stageControl;
+            var localPlayer=currentStage&&currentStage.myPlayer&&logic.players&&logic.players[currentStage.myPlayer.id];
+            if(typeof logic._getKiller==='function'){
+              var originalPlayerSpikeCheck=logic._getKiller;
+              logic._getKiller=function(victim,time){
+                var activeStage=window.__stageControl;
+                var local=activeStage&&activeStage.myPlayer&&this.players&&this.players[activeStage.myPlayer.id];
+                if(victim===local&&(autoKillEnabled||spikeImmunityEnabled)) return null;
+                return originalPlayerSpikeCheck.call(this,victim,time);
+              };
+            }
+            if(typeof logic._getPufferfishKiller==='function'){
+              var originalPufferfishSpikeCheck=logic._getPufferfishKiller;
+              logic._getPufferfishKiller=function(victim){
+                var activeStage=window.__stageControl;
+                var local=activeStage&&activeStage.myPlayer&&this.players&&this.players[activeStage.myPlayer.id];
+                if(victim===local&&(autoKillEnabled||spikeImmunityEnabled)) return null;
+                return originalPufferfishSpikeCheck.call(this,victim);
+              };
+            }
             logic.__localSpikeImmunityWrapped=true;
           }
           if(!autoKillEnabled) return;
