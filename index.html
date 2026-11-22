@@ -692,7 +692,12 @@
           <span style="font-weight:700">Bot Auto-Kill</span>
           <button id="akToggle" type="button" aria-pressed="false">OFF</button>
         </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;gap:8px">
+          <span style="font-weight:700">Spike Immunity</span>
+          <button id="spikeToggle" type="button" aria-pressed="false">OFF</button>
+        </div>
         <div id="akStatus" style="font-size:11px;opacity:.7;margin-top:4px">Targets: bots only</div>
+        <div id="spikeStatus" style="font-size:11px;opacity:.7;margin-top:2px">Spike protection: off</div>
       </div>
     </div>
     <script>
@@ -714,14 +719,29 @@
         // Local simulation helper: only AI-controlled bot objects are eligible.
         var akToggle=document.getElementById('akToggle');
         var akStatus=document.getElementById('akStatus');
+        var spikeToggle=document.getElementById('spikeToggle');
+        var spikeStatus=document.getElementById('spikeStatus');
         var autoKillEnabled=false;
+        var spikeImmunityEnabled=false;
         var lastBotTeleport=0;
+        function updateSpikeStatus(){
+          var active=autoKillEnabled||spikeImmunityEnabled;
+          spikeStatus.textContent=active?'Spike protection: active'+(autoKillEnabled?' (Auto-Kill)':''):'Spike protection: off';
+          spikeToggle.textContent=spikeImmunityEnabled?'ON':'OFF';
+          spikeToggle.setAttribute('aria-pressed',String(spikeImmunityEnabled));
+          spikeToggle.style.background=spikeImmunityEnabled?'#166534':'#334155';
+        }
         akToggle.addEventListener('click',function(){
           autoKillEnabled=!autoKillEnabled;
           akToggle.textContent=autoKillEnabled?'ON':'OFF';
           akToggle.setAttribute('aria-pressed',String(autoKillEnabled));
           akToggle.style.background=autoKillEnabled?'#166534':'#334155';
           akStatus.textContent=autoKillEnabled?'Local bot targeting active':'Targets: bots only';
+          updateSpikeStatus();
+        });
+        spikeToggle.addEventListener('click',function(){
+          spikeImmunityEnabled=!spikeImmunityEnabled;
+          updateSpikeStatus();
         });
 
         setInterval(function(){
@@ -731,14 +751,24 @@
           var logic=broadcaster&&broadcaster.gameLogic;
           var me=logic&&logic.players&&stage.myPlayer&&logic.players[stage.myPlayer.id];
           var survivors=logic&&logic.survivors;
-          if(!me||!me.alive||!Array.isArray(survivors)) return;
+          if(!Array.isArray(survivors)||!me||survivors.indexOf(me)<0) return;
+          if(logic&&typeof logic._getPufferfishKiller==='function'&&!logic.__localSpikeImmunityWrapped){
+            var originalSpikeCheck=logic._getPufferfishKiller;
+            logic._getPufferfishKiller=function(victim){
+              var currentStage=window.__stageControl;
+              var localPlayer=currentStage&&currentStage.myPlayer&&this.players&&this.players[currentStage.myPlayer.id];
+              if(victim===localPlayer&&(autoKillEnabled||spikeImmunityEnabled)) return null;
+              return originalSpikeCheck.call(this,victim);
+            };
+            logic.__localSpikeImmunityWrapped=true;
+          }
           var now=Date.now();
           if(now-lastBotTeleport<400) return;
 
           var target=null,nearest=Infinity;
           for(var i=0;i<survivors.length;i++){
             var bot=survivors[i];
-            if(!bot||bot===me||!bot.ai||!bot.alive||bot.blinkingTimeout>now) continue;
+            if(!bot||bot===me||!bot.ai||bot.blinkingTimeout>now) continue;
             var dx=bot.x-me.x,dy=bot.y-me.y;
             var distance=dx*dx+dy*dy;
             if(distance<nearest){nearest=distance;target=bot;}
