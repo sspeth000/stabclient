@@ -813,6 +813,7 @@
           if(!nearest){
             autoXPHasTarget=false;
             autoXPShouldMove=false;
+            if(autoXPOriginalMove) autoXPOriginalMove.call(broadcaster,false);
             autoXPStatus.textContent='Looking for food pickups…';
             return;
           }
@@ -822,6 +823,10 @@
           autoXPHasTarget=true;
           // Food is magnet-collected at close range; stop rather than circling the pickup.
           autoXPShouldMove=distanceToFood>150;
+          // Send the intended movement state directly; the normal game loop only sends
+          // move changes when its pointer-based state changes.
+          if(autoXPOriginalAim) autoXPOriginalAim.call(broadcaster,autoXPTargetAngle);
+          if(autoXPOriginalMove) autoXPOriginalMove.call(broadcaster,autoXPShouldMove);
           autoXPStatus.textContent='Seeking XP · '+Math.round(Number(nearest.exp)||0)+' XP · '+Math.round(distanceToFood)+' away';
         }
 
