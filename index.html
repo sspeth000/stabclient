@@ -826,6 +826,84 @@
       })();
     </script>
 
+
+    <style>
+      #stabClientCollectionPanel{position:fixed;right:16px;top:16px;z-index:100000;width:230px;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.94);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
+      #stabClientCollectionPanel .sc-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:10px}
+      #stabClientCollectionPanel button{border:0;border-radius:6px;background:#334155;color:#fff;padding:7px 9px;font:inherit;cursor:pointer}
+      #stabClientCollectionPanel .sc-choice{display:flex;align-items:center;gap:8px;padding:7px 8px;margin:3px 0;border-radius:6px;background:rgba(51,65,85,.72);cursor:pointer}
+      #stabClientCollectionPanel .sc-choice:has(input:checked){background:#164e63}
+      #stabClientCollectionPanel input[type=radio]{accent-color:#38bdf8}
+      #stabClientCollectionPanel input[type=number]{box-sizing:border-box;width:100%;margin-top:6px;padding:8px;border:1px solid #475569;border-radius:6px;background:#0f172a;color:#fff;font:inherit}
+      #stabClientCollectionPanel .sc-action{width:100%;margin-top:10px;background:#0369a1;font-weight:700}
+      #stabClientCollectionPanel .sc-status{font-size:11px;line-height:1.35;opacity:.78;margin-top:8px;min-height:28px}
+      #stabClientCollectionPanel.sc-min{width:auto;padding:8px 10px}
+      #stabClientCollectionPanel.sc-min .sc-body{display:none}
+      @media(max-width:600px){#stabClientCollectionPanel{right:10px;top:10px;width:205px;max-width:calc(100vw - 40px)}}
+    </style>
+    <div id="stabClientCollectionPanel" aria-label="StabClient collection tools">
+      <div class="sc-head"><span>StabClient Tools</span><button id="scMinimize" type="button" aria-label="Minimize">−</button></div>
+      <div class="sc-body">
+        <div style="font-weight:700;margin-bottom:6px">Unlock all of:</div>
+        <label class="sc-choice"><input type="radio" name="scCollection" value="fishes"> Fishes</label>
+        <label class="sc-choice"><input type="radio" name="scCollection" value="weapons"> Weapons</label>
+        <label class="sc-choice"><input type="radio" name="scCollection" value="masks"> Masks</label>
+        <label class="sc-choice"><input type="radio" name="scCollection" value="hats"> Hats</label>
+        <label class="sc-choice"><input type="radio" name="scCollection" value="all" checked> All</label>
+        <div style="border-top:1px solid rgba(255,255,255,.16);margin:10px 0"></div>
+        <label for="scPearls" style="font-weight:700">Black Pearls</label>
+        <input id="scPearls" type="number" min="0" step="1" inputmode="numeric" placeholder="Enter amount">
+        <button id="scApply" class="sc-action" type="button">Try local preview</button>
+        <div id="scStatus" class="sc-status" role="status" aria-live="polite">Preview only. Your account and server data are unchanged.</div>
+      </div>
+    </div>
+    <script>
+      (function(){
+        var panel=document.getElementById('stabClientCollectionPanel');
+        var minimize=document.getElementById('scMinimize');
+        var apply=document.getElementById('scApply');
+        var status=document.getElementById('scStatus');
+        var pearls=document.getElementById('scPearls');
+        var choices=panel.querySelectorAll('input[name="scCollection"]');
+
+        minimize.addEventListener('click',function(){
+          panel.classList.toggle('sc-min');
+          minimize.textContent=panel.classList.contains('sc-min')?'+':'−';
+        });
+
+        apply.addEventListener('click',function(){
+          var selected=panel.querySelector('input[name="scCollection"]:checked');
+          var amount=pearls.value.trim();
+          if(amount!==''&&(!Number.isSafeInteger(Number(amount))||Number(amount)<0)){
+            status.textContent='Enter a whole number of 0 or greater.';
+            return;
+          }
+          var preview={
+            collection:selected?selected.value:'all',
+            blackPearls:amount===''?null:Number(amount),
+            previewOnly:true,
+            updatedAt:Date.now()
+          };
+          // Deliberately isolated local preview state. No network requests,
+          // account balance writes, or server unlock claims are made here.
+          window.__stabClientLocalPreview=preview;
+          status.textContent='Local preview selection saved: '+preview.collection+'. '+(amount===''?'No pearl amount entered.':'Test pearl value: '+preview.blackPearls+'.')+' Server/account unchanged.';
+        });
+
+        function isVisible(element){
+          if(!element) return false;
+          var style=window.getComputedStyle(element);
+          return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity||1)>0;
+        }
+        function updateMenuVisibility(){
+          var title=document.getElementById('titleMenu');
+          panel.style.display=isVisible(title)?'block':'none';
+        }
+        updateMenuVisibility();
+        setInterval(updateMenuVisibility,500);
+      })();
+    </script>
+
 </body>
 
 </html>
