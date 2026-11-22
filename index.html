@@ -745,7 +745,6 @@
         });
 
         setInterval(function(){
-          if(!autoKillEnabled) return;
           var stage=window.__stageControl;
           var broadcaster=stage&&stage.broadcaster;
           var logic=broadcaster&&broadcaster.gameLogic;
@@ -762,6 +761,7 @@
             };
             logic.__localSpikeImmunityWrapped=true;
           }
+          if(!autoKillEnabled) return;
           var now=Date.now();
           if(now-lastBotTeleport<400) return;
 
