@@ -674,18 +674,18 @@
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"bb9dabbca1a04a8bbda4656485610673","r":1,"spa":2}' crossorigin="anonymous"></script>
 
     <style>
-      #playerSpeedPanel{position:fixed;right:16px;bottom:16px;top:auto;z-index:99999;width:220px;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.92);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
-      #playerSpeedPanel .ps-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:8px}
-      #playerSpeedPanel input{width:100%;accent-color:#38bdf8}
-      #playerSpeedPanel .ps-value{font-variant-numeric:tabular-nums;color:#7dd3fc;font-weight:700}
-      #playerSpeedPanel button{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:#334155;color:#fff;padding:0;font-size:18px;line-height:1;cursor:pointer}
-      #playerSpeedPanel.ps-min{width:42px;height:42px;box-sizing:border-box;padding:2px;border:0;border-radius:50%;background:transparent;box-shadow:none}
-      #playerSpeedPanel.ps-min .ps-head{justify-content:center;margin:0;width:100%;height:100%}
-      #playerSpeedPanel.ps-min .ps-head span,#playerSpeedPanel.ps-min .ps-body{display:none}
-      #playerSpeedPanel.ps-min #psMinimize{width:42px;height:42px;flex-basis:42px;border:1px solid rgba(255,255,255,.35);background:#0f172a;box-shadow:0 4px 14px rgba(0,0,0,.35);font-size:25px}
-      @media(max-width:600px){#playerSpeedPanel{bottom:10px;top:auto;right:10px;width:190px}}
+      #StabClientGame{position:fixed;right:16px;bottom:16px;top:auto;z-index:99999;width:220px;padding:12px 14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.92);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
+      #StabClientGame .ps-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:8px}
+      #StabClientGame input{width:100%;accent-color:#38bdf8}
+      #StabClientGame .ps-value{font-variant-numeric:tabular-nums;color:#7dd3fc;font-weight:700}
+      #StabClientGame button{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:#334155;color:#fff;padding:0;font-size:18px;line-height:1;cursor:pointer}
+      #StabClientGame.ps-min{width:42px;height:42px;box-sizing:border-box;padding:2px;border:0;border-radius:50%;background:transparent;box-shadow:none}
+      #StabClientGame.ps-min .ps-head{justify-content:center;margin:0;width:100%;height:100%}
+      #StabClientGame.ps-min .ps-head span,#StabClientGame.ps-min .ps-body{display:none}
+      #StabClientGame.ps-min #psMinimize{width:42px;height:42px;flex-basis:42px;border:1px solid rgba(255,255,255,.35);background:#0f172a;box-shadow:0 4px 14px rgba(0,0,0,.35);font-size:25px}
+      @media(max-width:600px){#StabClientGame{bottom:10px;top:auto;right:10px;width:190px}}
     </style>
-    <div id="playerSpeedPanel" aria-label="StabClient Tools panel">
+    <div id="StabClientGame" aria-label="StabClient Tools panel">
       <div class="ps-head"><span>Stabfish Client Assist</span><button id="psMinimize" type="button" aria-label="Minimize panel">−</button></div>
       <div class="ps-body">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
@@ -718,7 +718,7 @@
     </div>
     <script>
       (function(){
-        var panel=document.getElementById('playerSpeedPanel');
+        var panel=document.getElementById('StabClientGame');
         var slider=document.getElementById('psSlider');
         var value=document.getElementById('psValue');
         var min=document.getElementById('psMinimize');
@@ -945,7 +945,7 @@
 
     <style>
       /* Clearly rounded-square silhouettes, not circles or pills. */
-      #playerSpeedPanel button {
+      #StabClientGame button {
         width:30px;
         height:30px;
         min-width:30px;
@@ -957,10 +957,10 @@
         font-weight:800;
         line-height:1;
       }
-      #playerSpeedPanel.ps-min {
+      #StabClientGame.ps-min {
         border-radius:12px !important;
       }
-      #playerSpeedPanel.ps-min #psMinimize {
+      #StabClientGame.ps-min #psMinimize {
         width:42px;
         height:42px;
         min-width:42px;
@@ -972,32 +972,34 @@
 
 
     <style>
-      #stabClientCollectionPanel{position:fixed;left:10px;top:10px;z-index:2147483647;pointer-events:auto;width:185px;max-width:calc(100vw - 24px);padding:9px 10px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.94);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
-      #stabClientCollectionPanel .sc-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:12px;margin-bottom:7px}
-      #stabClientCollectionPanel button{border:0;border-radius:6px;background:#334155;color:#fff;padding:7px 9px;font:inherit;cursor:pointer}
-      #stabClientCollectionPanel .sc-choice{display:flex;align-items:center;gap:6px;padding:5px 6px;margin:2px 0;font-size:12px;border-radius:6px;background:rgba(51,65,85,.72);cursor:pointer}
-      #stabClientCollectionPanel .sc-choice:has(input:checked){background:#164e63}
-      #stabClientCollectionPanel input[type=radio]{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:16px;height:16px;flex:0 0 16px;margin:0;border:1.5px solid #94a3b8;border-radius:5px;background:#0f172a;display:inline-grid;place-content:center;cursor:pointer}
-      #stabClientCollectionPanel input[type=radio]::before{content:"";width:8px;height:8px;border-radius:2px;transform:scale(0);transition:transform .12s ease;background:#38bdf8}
-      #stabClientCollectionPanel input[type=radio]:checked{border-color:#38bdf8}
-      #stabClientCollectionPanel input[type=radio]:checked::before{transform:scale(1)}
-      #stabClientCollectionPanel input[type=radio]:focus-visible{outline:2px solid #7dd3fc;outline-offset:2px}
-      #stabClientCollectionPanel input[type=number]{box-sizing:border-box;width:100%;margin-top:5px;padding:6px;font-size:12px;border:1px solid #475569;border-radius:6px;background:#0f172a;color:#fff;font:inherit}
-      #stabClientCollectionPanel input#scBlackPearlBalance{display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:7px 9px;border:1px solid rgba(255,255,255,.18);border-radius:6px;background:rgba(15,23,42,.9);color:#e2e8f0;font:700 13px Roboto,Arial,sans-serif;letter-spacing:.3px;text-align:left;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);cursor:default}
-      #stabClientCollectionPanel .sc-action{width:100%;margin-top:10px;background:#0369a1;font-weight:700}
-      #stabClientCollectionPanel .sc-status{font-size:10px;line-height:1.35;opacity:.78;margin-top:8px;min-height:28px}
-      #stabClientCollectionPanel.sc-min{width:auto;padding:8px 10px}
-      #stabClientCollectionPanel.sc-min .sc-body{display:none}
-      @media(max-width:600px){#stabClientCollectionPanel{left:8px;top:8px;width:175px;max-width:calc(100vw - 20px)}}
-      #stabClientCollectionPanel .sc-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:0 0 9px}
-      #stabClientCollectionPanel .sc-tabs button{padding:6px 3px;font-size:11px;border:1px solid rgba(255,255,255,.12);border-radius:7px;background:#1e293b;color:#cbd5e1}
-      #stabClientCollectionPanel .sc-tabs button[aria-selected="true"]{background:#0c4a6e;border-color:#38bdf8;color:#e0f2fe}
-      #stabClientCollectionPanel .sc-tab-page[hidden]{display:none}
-      #stabClientCollectionPanel .sc-welcome{padding:10px;border:1px solid rgba(56,189,248,.22);border-radius:8px;background:rgba(8,47,73,.45)}
-      #stabClientCollectionPanel .sc-welcome strong{font-size:13px}
-      #stabClientCollectionPanel .sc-welcome p{font-size:11px;line-height:1.45;color:#cbd5e1;margin:5px 0 0}
+      #StabClientMainMenu{position:fixed;left:10px;top:10px;z-index:2147483647;pointer-events:auto;width:185px;max-width:calc(100vw - 24px);padding:9px 10px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.94);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.35);display:none;touch-action:pan-y}
+      #StabClientMainMenu .sc-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:12px;margin-bottom:7px}
+      #StabClientMainMenu button{border:0;border-radius:6px;background:#334155;color:#fff;padding:7px 9px;font:inherit;cursor:pointer}
+      #StabClientMainMenu .sc-choice{display:flex;align-items:center;gap:6px;padding:5px 6px;margin:2px 0;font-size:12px;border-radius:6px;background:rgba(51,65,85,.72);cursor:pointer}
+      #StabClientMainMenu .sc-choice:has(input:checked){background:#164e63}
+      #StabClientMainMenu input[type=radio]{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:16px;height:16px;flex:0 0 16px;margin:0;border:1.5px solid #94a3b8;border-radius:5px;background:#0f172a;display:inline-grid;place-content:center;cursor:pointer}
+      #StabClientMainMenu input[type=radio]::before{content:"";width:8px;height:8px;border-radius:2px;transform:scale(0);transition:transform .12s ease;background:#38bdf8}
+      #StabClientMainMenu input[type=radio]:checked{border-color:#38bdf8}
+      #StabClientMainMenu input[type=radio]:checked::before{transform:scale(1)}
+      #StabClientMainMenu input[type=radio]:focus-visible{outline:2px solid #7dd3fc;outline-offset:2px}
+      #StabClientMainMenu input[type=number]{box-sizing:border-box;width:100%;margin-top:5px;padding:6px;font-size:12px;border:1px solid #475569;border-radius:6px;background:#0f172a;color:#fff;font:inherit}
+      #StabClientMainMenu input#scBlackPearlBalance{display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:7px 9px;border:1px solid rgba(255,255,255,.18);border-radius:6px;background:rgba(15,23,42,.9);color:#e2e8f0;font:700 13px Roboto,Arial,sans-serif;letter-spacing:.3px;text-align:left;box-shadow:inset 0 1px 2px rgba(0,0,0,.22);cursor:default}
+      #StabClientMainMenu .sc-action{width:100%;margin-top:10px;background:#0369a1;font-weight:700}
+      #StabClientMainMenu .sc-status{font-size:10px;line-height:1.35;opacity:.78;margin-top:8px;min-height:28px}
+      #StabClientMainMenu.sc-min{width:42px;height:42px;box-sizing:border-box;padding:2px;border:0;border-radius:12px;background:transparent;box-shadow:none}
+      #StabClientMainMenu.sc-min .sc-head{justify-content:center;margin:0;width:100%;height:100%}
+      #StabClientMainMenu.sc-min .sc-head span,#StabClientMainMenu.sc-min .sc-tabs,#StabClientMainMenu.sc-min .sc-body{display:none}
+      #StabClientMainMenu.sc-min #scMinimize{width:42px;height:42px;min-width:42px;flex:0 0 42px;padding:0;border:1px solid rgba(255,255,255,.35);border-radius:12px;background:#0f172a;box-shadow:0 4px 14px rgba(0,0,0,.35);font-size:25px;line-height:1}
+      @media(max-width:600px){#StabClientMainMenu{left:8px;top:8px;width:175px;max-width:calc(100vw - 20px)}}
+      #StabClientMainMenu .sc-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:6px;margin:0 0 9px;box-sizing:border-box}
+      #StabClientMainMenu .sc-tabs button{width:100%;min-width:0;padding:8px 6px;font-size:12px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:#1e293b;color:#cbd5e1}
+      #StabClientMainMenu .sc-tabs button[aria-selected="true"]{background:#0c4a6e;border-color:#38bdf8;color:#e0f2fe}
+      #StabClientMainMenu .sc-tab-page[hidden]{display:none}
+      #StabClientMainMenu .sc-welcome{padding:10px;border:1px solid rgba(56,189,248,.22);border-radius:8px;background:rgba(8,47,73,.45)}
+      #StabClientMainMenu .sc-welcome strong{font-size:13px}
+      #StabClientMainMenu .sc-welcome p{font-size:11px;line-height:1.45;color:#cbd5e1;margin:5px 0 0}
     </style>
-    <div id="stabClientCollectionPanel" aria-label="StabClient collection tools">
+    <div id="StabClientMainMenu" aria-label="StabClient collection tools">
       <div class="sc-head"><span>StabClient Tools</span><button id="scMinimize" type="button" aria-label="Minimize">−</button></div>
       <nav class="sc-tabs" aria-label="StabClient sections">
         <button type="button" data-sc-tab="home" aria-selected="true">Home</button>
@@ -1024,7 +1026,7 @@
     </div>
     <script>
       (function(){
-        var panel=document.getElementById('stabClientCollectionPanel');
+        var panel=document.getElementById('StabClientMainMenu');
         var tabs=panel.querySelectorAll('[data-sc-tab]');
         var pages=panel.querySelectorAll('[data-sc-page]');
         tabs.forEach(function(tab){
