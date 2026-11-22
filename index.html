@@ -731,51 +731,10 @@
         var autoKillEnabled=false;
         var spikeImmunityEnabled=false;
         var autoXPEnabled=false;
-        var autoXPTargetAngle=0;
-        var autoXPHasTarget=false;
-        var autoXPShouldMove=false;
-        var autoXPWrappedBroadcaster=null;
-        var autoXPOriginalAim=null;
-        var autoXPOriginalMove=null;
-        var autoXPWrappedAim=null;
-        var autoXPWrappedMove=null;
-        var lastBotTeleport=0;
-
-        function restoreAutoXPControls(){
-          if(!autoXPWrappedBroadcaster) return;
-          if(autoXPWrappedBroadcaster.aim===autoXPWrappedAim)
-            autoXPWrappedBroadcaster.aim=autoXPOriginalAim;
-          if(autoXPWrappedBroadcaster.move===autoXPWrappedMove)
-            autoXPWrappedBroadcaster.move=autoXPOriginalMove;
-          autoXPWrappedBroadcaster=null;
-          autoXPOriginalAim=null;
-          autoXPOriginalMove=null;
-          autoXPWrappedAim=null;
-          autoXPWrappedMove=null;
-        }
-
-        function bindAutoXPControls(broadcaster){
-          if(!broadcaster||typeof broadcaster.aim!=='function'||typeof broadcaster.move!=='function') return;
-          if(autoXPWrappedBroadcaster===broadcaster) return;
-          restoreAutoXPControls();
-          autoXPWrappedBroadcaster=broadcaster;
-          autoXPOriginalAim=broadcaster.aim;
-          autoXPOriginalMove=broadcaster.move;
-          autoXPWrappedAim=function(degree){
-            return autoXPOriginalAim.call(this,autoXPEnabled&&autoXPHasTarget?autoXPTargetAngle:degree);
-          };
-          autoXPWrappedMove=function(isMoving){
-            return autoXPOriginalMove.call(this,autoXPEnabled?autoXPShouldMove:isMoving);
-          };
-          broadcaster.aim=autoXPWrappedAim;
-          broadcaster.move=autoXPWrappedMove;
-        }
+        var lastAutoXPTeleport=0;
 
         function updateAutoXP(){
           if(!autoXPEnabled){
-            autoXPHasTarget=false;
-            autoXPShouldMove=false;
-            restoreAutoXPControls();
             autoXPStatus.textContent='Auto XP: off';
             return;
           }
@@ -783,25 +742,24 @@
           var stage=window.__stageControl;
           var player=stage&&stage.myPlayer;
           var room=stage&&stage.roomControl;
-          var broadcaster=stage&&stage.broadcaster;
-          if(!stage||!player||!stage.gameStarted||!room||!broadcaster||
-             !Number.isFinite(player.x)||!Number.isFinite(player.y)){
-            autoXPHasTarget=false;
-            autoXPShouldMove=false;
-            restoreAutoXPControls();
+          var logic=stage&&stage.broadcaster&&stage.broadcaster.gameLogic;
+          var me=logic&&logic.players&&player&&logic.players[player.id];
+          var survivors=logic&&logic.survivors;
+          if(!stage||!player||!stage.gameStarted||!room||!logic||!me||
+             !Array.isArray(survivors)||survivors.indexOf(me)<0||
+             !Number.isFinite(me.x)||!Number.isFinite(me.y)){
             autoXPStatus.textContent='Waiting for an active match…';
             return;
           }
 
-          bindAutoXPControls(broadcaster);
           var foods=room.foods||{};
           var nearest=null;
           var nearestDistance=Infinity;
           Object.keys(foods).forEach(function(id){
             var food=foods[id];
             if(!food||!Number.isFinite(food.x)||!Number.isFinite(food.y)) return;
-            var dx=food.x-player.x;
-            var dy=food.y-player.y;
+            var dx=food.x-me.x;
+            var dy=food.y-me.y;
             var distance=dx*dx+dy*dy;
             if(distance<nearestDistance||
                (distance===nearestDistance&&nearest&&Number(food.exp||0)>Number(nearest.exp||0))){
@@ -811,23 +769,22 @@
           });
 
           if(!nearest){
-            autoXPHasTarget=false;
-            autoXPShouldMove=false;
-            if(autoXPOriginalMove) autoXPOriginalMove.call(broadcaster,false);
             autoXPStatus.textContent='Looking for food pickups…';
             return;
           }
 
           var distanceToFood=Math.sqrt(nearestDistance);
-          autoXPTargetAngle=Math.atan2(nearest.y-player.y,nearest.x-player.x)*180/Math.PI;
-          autoXPHasTarget=true;
-          // Food is magnet-collected at close range; stop rather than circling the pickup.
-          autoXPShouldMove=distanceToFood>150;
-          // Send the intended movement state directly; the normal game loop only sends
-          // move changes when its pointer-based state changes.
-          if(autoXPOriginalAim) autoXPOriginalAim.call(broadcaster,autoXPTargetAngle);
-          if(autoXPOriginalMove) autoXPOriginalMove.call(broadcaster,autoXPShouldMove);
-          autoXPStatus.textContent='Seeking XP · '+Math.round(Number(nearest.exp)||0)+' XP · '+Math.round(distanceToFood)+' away';
+          var now=Date.now();
+          if(now-lastAutoXPTeleport>=100){
+            // Use the same local simulation-position technique as Auto Kill.
+            var roomW=logic.roomW||Infinity,roomH=logic.roomH||Infinity;
+            me.x=Math.max(12,Math.min(roomW-12,nearest.x));
+            me.y=Math.max(12,Math.min(roomH-12,nearest.y));
+            me.direction=Math.atan2(nearest.y-me.y,nearest.x-me.x)*180/Math.PI;
+            me.speed=0;
+            lastAutoXPTeleport=now;
+          }
+          autoXPStatus.textContent='Teleporting to XP · '+Math.round(Number(nearest.exp)||0)+' XP · '+Math.round(distanceToFood)+' away';
         }
 
         autoXPToggle.addEventListener('click',function(){
@@ -836,9 +793,6 @@
           autoXPToggle.setAttribute('aria-pressed',String(autoXPEnabled));
           autoXPToggle.style.background=autoXPEnabled?'#166534':'#334155';
           if(!autoXPEnabled){
-            autoXPHasTarget=false;
-            autoXPShouldMove=false;
-            restoreAutoXPControls();
             autoXPStatus.textContent='Auto XP: off';
           }else{
             autoXPStatus.textContent='Searching for food pickups…';
