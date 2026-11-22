@@ -2,43 +2,43 @@
 #scMainMenu,#scMainMenuToggle{font-family:Roboto,Arial,sans-serif;box-sizing:border-box}
 #scMainMenu *,#scMainMenuToggle *{box-sizing:border-box}
 #scMainMenu{
- position:fixed;z-index:100000;left:20px;top:24px;
- width:min(760px,calc(100vw - 40px));height:min(800px,calc(100vh - 48px));
- display:none;grid-template-columns:224px minmax(0,1fr);grid-template-rows:110px minmax(0,1fr);
+ position:fixed;z-index:100000;left:10px;top:10px;
+ width:min(560px,calc(100vw - 20px));height:min(570px,calc(100vh - 20px));
+ display:none;grid-template-columns:150px minmax(0,1fr);grid-template-rows:76px minmax(0,1fr);
  overflow:hidden;border:1px solid rgba(255,255,255,.22);border-radius:24px;
  background:rgba(17,24,39,.97);color:#f8fafc;box-shadow:0 10px 32px rgba(0,0,0,.42);
  backdrop-filter:blur(9px);touch-action:pan-y
 }
-#scMainMenu .sc-head{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 30px;border-bottom:1px solid rgba(255,255,255,.13)}
-#scMainMenu .sc-head strong{font-size:27px;font-weight:600}
+#scMainMenu .sc-head{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;padding:0 18px 0 20px;border-bottom:1px solid rgba(255,255,255,.13)}
+#scMainMenu .sc-head strong{font-size:16px;font-weight:600}
 #scMainMenu button{font:inherit;color:inherit;cursor:pointer}
-#scMainMenu .sc-close{width:60px;height:60px;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:#334155;font-size:28px;font-weight:700;line-height:1}
-#scMainMenu .sc-nav{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:12px;padding:20px;border-right:1px solid rgba(255,255,255,.13)}
-#scMainMenu .sc-nav button{width:100%;min-height:72px;text-align:left;padding:0 17px;border:1px solid transparent;border-radius:17px;background:transparent;color:#cbd5e1;font-size:21px}
+#scMainMenu .sc-close{width:44px;height:44px;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:#334155;font-size:23px;font-weight:700;line-height:1}
+#scMainMenu .sc-nav{grid-column:1;grid-row:2;display:flex;flex-direction:column;gap:8px;padding:12px;border-right:1px solid rgba(255,255,255,.13)}
+#scMainMenu .sc-nav button{width:100%;min-height:52px;text-align:left;padding:0 12px;border:1px solid transparent;border-radius:17px;background:transparent;color:#cbd5e1;font-size:21px}
 #scMainMenu .sc-nav button[aria-selected="true"]{background:#123e56;color:#7dd3fc;border-color:#087eae}
-#scMainMenu .sc-content{grid-column:2;grid-row:2;min-width:0;overflow:auto;padding:28px}
-#scMainMenu .sc-content h1{font-size:32px;font-weight:500;margin:0 0 16px}
-#scMainMenu .sc-content p{font-size:20px;line-height:1.5;color:#cbd5e1;margin:0 0 24px}
+#scMainMenu .sc-content{grid-column:2;grid-row:2;min-width:0;overflow:auto;padding:20px}
+#scMainMenu .sc-content h1{font-size:25px;font-weight:500;margin:0 0 16px}
+#scMainMenu .sc-content p{font-size:16px;line-height:1.5;color:#cbd5e1;margin:0 0 24px}
 #scMainMenu .sc-eyebrow{font-size:13px;font-weight:800;letter-spacing:.14em;color:#7dd3fc;margin-bottom:12px}
 #scMainMenu .sc-welcome{padding:4px 0 20px}
 #scMainMenu .sc-welcome h1{font-size:32px;margin:0 0 14px}
 #scMainMenu .sc-welcome p{margin:0;max-width:520px}
-#scMainMenu .sc-note{padding:18px;border-radius:16px;background:rgba(51,65,85,.58);font-size:17px;line-height:1.5;color:#cbd5e1}
+#scMainMenu .sc-note{padding:18px;border-radius:16px;background:rgba(51,65,85,.58);font-size:14px;line-height:1.5;color:#cbd5e1}
 #scMainMenu .sc-collection-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-#scMainMenu .sc-collection-grid button{min-height:58px;padding:12px 16px;text-align:left;border:1px solid rgba(255,255,255,.15);border-radius:13px;background:#243247;font-size:17px}
+#scMainMenu .sc-collection-grid button{min-height:46px;padding:10px 12px;text-align:left;border:1px solid rgba(255,255,255,.15);border-radius:13px;background:#243247;font-size:14px}
 #scMainMenu .sc-collection-grid button:hover{background:#334155}
 #scMainMenu .sc-pearl-card{padding:24px;border:1px solid rgba(56,189,248,.28);border-radius:18px;background:linear-gradient(145deg,#0f172a,#102b40)}
 #scMainMenu .sc-pearl-card span,#scMainMenu .sc-pearl-card small{display:block;color:#94a3b8;font-size:13px;letter-spacing:.1em}
-#scMainMenu .sc-pearl-card strong{display:block;margin:12px 0;font-size:42px;line-height:1.15;color:#7dd3fc;font-variant-numeric:tabular-nums}
-#scMainMenuToggle{position:fixed;z-index:100001;left:20px;top:24px;display:none;padding:12px 16px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.97);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+#scMainMenu .sc-pearl-card strong{display:block;margin:12px 0;font-size:32px;line-height:1.15;color:#7dd3fc;font-variant-numeric:tabular-nums}
+#scMainMenuToggle{position:fixed;z-index:100001;left:10px;top:10px;display:none;padding:12px 16px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:rgba(17,24,39,.97);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.3)}
 @media(max-width:600px){
- #scMainMenu{left:10px;top:12px;width:calc(100vw - 20px);height:calc(100vh - 24px);grid-template-columns:118px minmax(0,1fr);grid-template-rows:76px}
+ #scMainMenu{left:6px;top:6px;width:calc(100vw - 12px);height:calc(100vh - 12px);grid-template-columns:104px minmax(0,1fr);grid-template-rows:64px}
  #scMainMenu .sc-head{padding:0 12px 0 15px}
- #scMainMenu .sc-head strong{font-size:18px}
- #scMainMenu .sc-close{width:42px;height:42px;border-radius:12px;font-size:22px}
+ #scMainMenu .sc-head strong{font-size:16px}
+ #scMainMenu .sc-close{width:36px;height:36px;border-radius:12px;font-size:22px}
  #scMainMenu .sc-nav{gap:8px;padding:12px 8px}
- #scMainMenu .sc-nav button{min-height:58px;padding:0 9px;font-size:14px;overflow-wrap:anywhere}
- #scMainMenu .sc-content{padding:16px 13px}
+ #scMainMenu .sc-nav button{min-height:48px;padding:0 7px;font-size:12px;overflow-wrap:anywhere}
+ #scMainMenu .sc-content{padding:12px 10px}
  #scMainMenu .sc-content h1{font-size:23px}
  #scMainMenu .sc-content p{font-size:15px}
  #scMainMenu .sc-note{font-size:13px;padding:12px}
