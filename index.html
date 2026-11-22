@@ -852,9 +852,9 @@
         <label class="sc-choice"><input type="radio" name="scCollection" value="all" checked> All</label>
         <div style="border-top:1px solid rgba(255,255,255,.16);margin:10px 0"></div>
         <div style="font-weight:700">Black Pearls</div>
-        <div class="sc-status">Current balance: <strong id="scPearlsValue">Loading…</strong></div>
-        <button id="scApply" class="sc-action" type="button">Apply unlocks in game</button>
-        <div id="scStatus" class="sc-status" role="status" aria-live="polite">Connects to the running game's UserManager. Unlocks are stored in local game data.</div>
+        <div class="sc-status">Account currency is server-managed. This client menu cannot legitimately change the balance.</div>
+        <button id="scApply" class="sc-action" type="button">Apply local unlocks</button>
+        <div id="scStatus" class="sc-status" role="status" aria-live="polite">Unlocks are saved to this browser's local game data. A reload applies them.</div>
       </div>
     </div>
     <script>
@@ -863,32 +863,25 @@
         var minimize=document.getElementById('scMinimize');
         var apply=document.getElementById('scApply');
         var status=document.getElementById('scStatus');
-        var pearlsValue=document.getElementById('scPearlsValue');
+        var choices=panel.querySelectorAll('input[name="scCollection"]');
 
-        function getGameApi(){
-          return window.StabClient&&window.StabClient.userManager?window.StabClient:null;
+        function saveLocalData(key,value){
+          var serialized=JSON.stringify(value);
+          localStorage.setItem(key,serialized);
+          document.cookie=key+'='+serialized+';expires='+new Date(Date.now()+30*86400000).toUTCString()+';path=/;SameSite=Lax';
         }
 
-        function updatePearls(inventory){
-          var current=inventory||((getGameApi()&&getGameApi().userManager.inventory)||null);
-          pearlsValue.textContent=current&&Number.isFinite(Number(current.numPearls))
-            ?Number(current.numPearls).toLocaleString()
-            :'Unavailable';
+        function applyLocalUnlocks(collection){
+          var count=128;
+          if(collection==='fishes'||collection==='all')
+            saveLocalData('unlockedBodies',Array(count).fill(true));
+          if(collection==='weapons'||collection==='all')
+            saveLocalData('unlockedSpears',Array(count).fill(3));
+          if(collection==='masks'||collection==='all')
+            saveLocalData('unlockedFaces',Array(count).fill(true));
+          if(collection==='hats'||collection==='all')
+            saveLocalData('unlockedHats',Array(count).fill(true));
         }
-
-        function connectGame(){
-          var api=getGameApi();
-          if(!api){
-            status.textContent='Waiting for the game runtime…';
-            return false;
-          }
-          updatePearls();
-          api.userManager.on('updateInventory',updatePearls);
-          status.textContent='Connected to the live game manager.';
-          return true;
-        }
-
-        connectGame();
 
         minimize.addEventListener('click',function(){
           panel.classList.toggle('sc-min');
@@ -899,15 +892,11 @@
           var selected=panel.querySelector('input[name="scCollection"]:checked');
           var collection=selected?selected.value:'all';
           try{
-            var api=getGameApi();
-            if(!api||typeof api.applyLocalUnlocks!=='function')
-              throw new Error('Game runtime is not ready. Wait for the game to finish loading.');
-            var changed=api.applyLocalUnlocks(collection);
-            var total=changed.bodies+changed.spears+changed.faces+changed.hats;
-            status.textContent='Applied '+collection+': '+total+' catalogue entries updated. Game menus refreshed.';
-            updatePearls();
+            applyLocalUnlocks(collection);
+            status.textContent='Saved '+collection+' unlocks to this browser. Reloading the game now…';
+            window.location.reload();
           }catch(error){
-            status.textContent='Could not apply unlocks: '+error.message;
+            status.textContent='Could not save local game data: '+error.message;
           }
         });
 
