@@ -824,11 +824,15 @@
           }else{
             autoXPStatus.textContent='Searching for pickups…';
           }
+          updateSpikeStatus();
         });
         setInterval(updateAutoXP,50);
         function updateSpikeStatus(){
-          var active=autoKillEnabled||spikeImmunityEnabled;
-          spikeStatus.textContent=active?'Spike protection: active'+(autoKillEnabled?' (Auto-Kill)':''):'Spike protection: off';
+          var active=autoKillEnabled||autoXPEnabled||spikeImmunityEnabled;
+          var sources=[];
+          if(autoKillEnabled) sources.push('Auto-Kill');
+          if(autoXPEnabled) sources.push('Auto Collect');
+          spikeStatus.textContent=active?'Spike protection: active'+(sources.length?' ('+sources.join(' + ')+')':''):'Spike protection: off';
           spikeToggle.textContent=spikeImmunityEnabled?'ON':'OFF';
           spikeToggle.setAttribute('aria-pressed',String(spikeImmunityEnabled));
           spikeToggle.style.background=spikeImmunityEnabled?'#166534':'#334155';
@@ -856,7 +860,7 @@
 
           // Reinforce the game's own temporary invulnerability while protection is enabled.
           // Refresh before the survival check so respawns are protected as soon as they re-enter.
-          if(autoKillEnabled||spikeImmunityEnabled){
+          if(autoKillEnabled||autoXPEnabled||spikeImmunityEnabled){
             var protectUntil=Date.now()+500;
             me.invincibleTimeout=Math.max(me.invincibleTimeout||0,protectUntil);
           }
@@ -870,7 +874,7 @@
               logic._getKiller=function(victim,time){
                 var activeStage=window.__stageControl;
                 var local=activeStage&&activeStage.myPlayer&&this.players&&this.players[activeStage.myPlayer.id];
-                if(victim===local&&(autoKillEnabled||spikeImmunityEnabled)) return null;
+                if(victim===local&&(autoKillEnabled||autoXPEnabled||spikeImmunityEnabled)) return null;
                 return originalPlayerSpikeCheck.call(this,victim,time);
               };
             }
@@ -879,7 +883,7 @@
               logic._getPufferfishKiller=function(victim){
                 var activeStage=window.__stageControl;
                 var local=activeStage&&activeStage.myPlayer&&this.players&&this.players[activeStage.myPlayer.id];
-                if(victim===local&&(autoKillEnabled||spikeImmunityEnabled)) return null;
+                if(victim===local&&(autoKillEnabled||autoXPEnabled||spikeImmunityEnabled)) return null;
                 return originalPufferfishSpikeCheck.call(this,victim);
               };
             }
