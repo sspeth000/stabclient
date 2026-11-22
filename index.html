@@ -704,12 +704,7 @@
           <label><input type="checkbox" id="collectFoodXP" checked> Collect Food XP</label>
           <label><input type="checkbox" id="collectAccessories" checked> Collect Accessories</label>
         </div>
-        <div style="font-weight:700;margin:12px 0 5px">PICKUP VISIBILITY</div>
-        <div id="scVisualOptions" style="display:grid;grid-template-columns:1fr 1fr;gap:5px;font-size:11px">
-          <label><input type="checkbox" id="showAccessories" checked> Accessories</label>
-          <label><input type="checkbox" id="showGreenCircles" checked> Green circles</label>
-        </div>
-        <div id="autoXPStatus" style="font-size:11px;opacity:.7;margin-top:4px">Auto Collect: off</div>
+<div id="autoXPStatus" style="font-size:11px;opacity:.7;margin-top:4px">Auto Collect: off</div>
         <div id="akStatus" style="font-size:11px;opacity:.7;margin-top:4px">Targets: server-controlled clients</div>
         <div id="spikeStatus" style="font-size:11px;opacity:.7;margin-top:2px">Spike protection: off</div>
       </div>
@@ -915,26 +910,6 @@
           akStatus.textContent='Targeting server-controlled clients';
         },50);
 
-
-        // Visibility filters for the pickup layers. Unknown particle classes stay visible.
-        function updatePickupVisibility(){
-          var stage=window.__stageControl, room=stage&&stage.roomControl;
-          if(!room) return;
-          var accessories=document.getElementById('showAccessories').checked;
-          var greens=document.getElementById('showGreenCircles').checked;
-          (room.lootLayer&&room.lootLayer.children||[]).forEach(function(sprite){
-            var isAccessory=sprite&&(sprite.type==='face'||sprite.type==='hat');
-            if(isAccessory) sprite.visible=accessories;
-          });
-          (room.foodLayer&&room.foodLayer.children||[]).forEach(function(sprite){
-            if(sprite) sprite.visible=greens;
-          });
-        }
-        ['showAccessories','showGreenCircles'].forEach(function(id){
-          var el=document.getElementById(id);
-          el.addEventListener('change',updatePickupVisibility);
-        });
-        setInterval(updatePickupVisibility,300);
 
         function updateVisibility(){
           var stage=window.__stageControl;
