@@ -56,22 +56,19 @@ Example manifest:
     "html": [],
     "assets": []
   },
-  "permissions": [],
-  "panel": {
-    "title": "Test Mod",
-    "message": "Mod loading works."
-  }
+  "permissions": []
 }
 ```
 
 ## Runtime behavior
 
 - Installing a mod saves it locally. Enabling it fetches and validates its manifest and entry script.
-- The entry script runs in a sandboxed iframe with scripts enabled, but without same-origin access or network access.
-- Mods cannot access the parent page's DOM directly.
-- Mods currently receive no loader-provided JavaScript APIs. Their scripts run in an isolated iframe and cannot access the parent page's DOM or network.
-- A manifest may optionally declare a simple `panel` with a `title` and `message`. The loader displays it when the mod is enabled and closes it when the mod is disabled or removed. This is manifest configuration, not a JavaScript API.
-- Disabling or removing a mod destroys its sandbox and closes its manifest panel.
+- The entry script is injected directly into the page and runs unsandboxed in the page's JavaScript context.
+- Mods use ordinary browser JavaScript and the page DOM directly. There is no mod UI API and no iframe.
+- Each mod creates, styles, updates, and removes its own UI.
+- Mods are trusted first-party code. They can read or change page content and interact with anything available to page scripts. Only use code you wrote or carefully reviewed.
+- Removing a script element does not undo code that already ran. After disabling or removing an enabled mod, refresh the page to fully stop its running code and clear its UI, listeners, and timers.
+- All installed mods start disabled after a full page reload.
 - The loader currently loads the manifest's `entry` script only. The other resource lists are reserved for future CSS, HTML, and asset support.
 - Keep the manifest's `permissions` array empty until specific, narrowly scoped APIs are introduced.
 
