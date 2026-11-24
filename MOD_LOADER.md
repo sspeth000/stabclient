@@ -64,12 +64,15 @@ Example manifest:
 
 - Installing a mod saves it locally. Enabling it fetches and validates its manifest and entry script.
 - The entry script is injected directly into the page and runs unsandboxed in the page's JavaScript context.
-- Mods use ordinary browser JavaScript and the page DOM directly. There is no mod UI API and no iframe.
-- Each mod creates, styles, updates, and removes its own UI.
+- Mods use ordinary browser JavaScript and the page DOM directly. They run in the main page context, not an iframe.
+- Each mod receives its own `Mod` object as a function parameter. It is not a shared global object.
+- Mods may define `Mod.close = function () { ... }` in `main.js`. The loader calls that function when the mod is disabled or removed, allowing the mod to clean up its own panels, listeners, timers, and other resources.
+- `Mod.close` is optional. If a mod does not define it, the loader skips the cleanup callback.
+- A mod should make its cleanup function safe to call once and should remove every resource it created.
 - Mods are trusted first-party code. They can read or change page content and interact with anything available to page scripts. Only use code you wrote or carefully reviewed.
-- Removing a script element does not undo code that already ran. After disabling or removing an enabled mod, refresh the page to fully stop its running code and clear its UI, listeners, and timers.
+- The loader calls the mod's `Mod.close()` cleanup hook before removing its script element. Removing a script element does not undo code that already ran, so refresh after disabling a mod to fully stop any code or resources the mod did not clean up. Removing a mod also refreshes the page after saving the change.
 - All installed mods start disabled after a full page reload.
 - The loader currently loads the manifest's `entry` script only. The other resource lists are reserved for future CSS, HTML, and asset support.
 - Keep the manifest's `permissions` array empty until specific, narrowly scoped APIs are introduced.
 
-The runtime is an initial foundation. Mods currently have no loader-provided APIs and remain isolated from the game page.
+The runtime is an initial foundation. `Mod.close()` is the first lifecycle hook; other APIs can be added deliberately as the mod system grows.
