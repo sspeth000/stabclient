@@ -1,6 +1,6 @@
 /* StabClient Mod Loader
- * Loads manifest-based mods in isolated, script-only iframes.
- * Mods run in isolated, script-only iframes and cannot access the parent DOM.
+ * Loads trusted, user-authored mods directly into the page.
+ * Unsandboxed mods can access the page and must be treated as fully trusted code.
  */
 (function () {
   'use strict';
@@ -221,61 +221,13 @@
     return response.text();
   }
 
-  function createManifestPanel(id, panelConfig) {
-    if (!panelConfig || typeof panelConfig !== 'object') return null;
-    var title = typeof panelConfig.title === 'string' ? panelConfig.title.slice(0, 60) : 'Mod';
-    var message = typeof panelConfig.message === 'string' ? panelConfig.message.slice(0, 500) : '';
-    var shell = document.createElement('div');
-    shell.setAttribute('role', 'dialog');
-    shell.setAttribute('aria-label', title);
-    shell.style.cssText = 'all:initial;display:block;visibility:visible;opacity:1;position:fixed;top:76px;right:16px;z-index:2147483647;width:min(300px,calc(100vw - 32px));box-sizing:border-box;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:#111827;color:#fff;font:13px Roboto,Arial,sans-serif;box-shadow:0 10px 32px rgba(0,0,0,.4);pointer-events:auto;';
-    var header = document.createElement('div');
-    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;';
-    var heading = document.createElement('strong');
-    heading.textContent = title;
-    var close = document.createElement('button');
-    close.type = 'button';
-    close.textContent = '×';
-    close.setAttribute('aria-label', 'Close panel');
-    close.style.cssText = 'border:0;border-radius:6px;background:#334155;color:#fff;width:28px;height:28px;font-size:20px;line-height:1;cursor:pointer;';
-    close.addEventListener('click', function () {
-      shell.remove();
-      var runtime = activeMods[id];
-      if (runtime && runtime.panel === shell) runtime.panel = null;
-    });
-    header.appendChild(heading);
-    header.appendChild(close);
-    var body = document.createElement('div');
-    body.textContent = message;
-    body.style.cssText = 'color:#cbd5e1;line-height:1.5;overflow-wrap:anywhere;';
-    shell.appendChild(header);
-    shell.appendChild(body);
-    document.body.appendChild(shell);
-    return shell;
-  }
-
   function stopMod(id) {
     var runtime = activeMods[id];
     if (!runtime) return;
-    if (runtime.panel) runtime.panel.remove();
-    if (runtime.frame) runtime.frame.remove();
+    // Removing a script element does not undo code that has already executed.
+    // Unsandboxed mods remain active until the page is reloaded.
+    if (runtime.script) runtime.script.remove();
     delete activeMods[id];
-  }
-
-  function makeSandboxDocument() {
-    return '<!doctype html><html><head><meta charset="utf-8">' +
-      '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'unsafe-inline\'; style-src \'unsafe-inline\'; img-src data: blob:; connect-src \'none\'; frame-src \'none\'; object-src \'none\'; base-uri \'none\'; form-action \'none\';">' +
-      '</head><body><script>' +
-      '(function(){' +
-      'window.addEventListener("message",function(event){' +
-      'var data=event.data;' +
-      'if(event.source!==window.parent||!data||data.type!=="stabclient-init")return;' +
-      'var script=document.createElement("script");' +
-      'script.textContent=String(data.source||"");' +
-      'document.body.appendChild(script);' +
-      '});' +
-      '})();' +
-      '<\/script></body></html>';
   }
 
   async function startMod(mod) {
@@ -293,26 +245,13 @@
     }
     var manifestUrl = new URL(mod.manifest, MOD_BASE_URL).toString();
     var source = await fetchModFile(manifest.entry, manifestUrl);
-    var frame = document.createElement('iframe');
-    frame.title = 'Isolated mod: ' + mod.name;
-    frame.setAttribute('sandbox', 'allow-scripts');
-    frame.setAttribute('aria-hidden', 'true');
-    frame.tabIndex = -1;
-    frame.style.cssText = 'position:fixed;left:-20px;top:-20px;width:1px;height:1px;border:0;opacity:0;pointer-events:none;';
-    var token = mod.id + ':' + Date.now() + ':' + Math.random().toString(36).slice(2);
-    activeMods[mod.id] = { frame: frame, panel: null, token: token };
-
-    frame.srcdoc = makeSandboxDocument();
-    frame.onload = function () {
-      if (!activeMods[mod.id] || activeMods[mod.id].frame !== frame) return;
-      frame.contentWindow.postMessage({
-        type: 'stabclient-init',
-        token: token,
-        source: source
-      }, '*');
-    };
-    document.body.appendChild(frame);
-    activeMods[mod.id].panel = createManifestPanel(mod.id, manifest.panel);
+    // Mods are trusted first-party code and execute in the page's main JavaScript context.
+    // They create and manage their own UI using the ordinary DOM APIs.
+    var script = document.createElement('script');
+    script.dataset.stabclientMod = mod.id;
+    script.textContent = source + '\n//# sourceURL=stabclient-mod-' + mod.id + '.js';
+    activeMods[mod.id] = { script: script };
+    (document.head || document.documentElement).appendChild(script);
   }
 
   async function loadCatalog() {
@@ -353,7 +292,7 @@
         stopMod(id);
         installed[id].enabled = false;
         if (!saveInstalled()) return;
-        setStatus(mod.name + ' disabled.');
+        setStatus(mod.name + ' marked disabled. Refresh the page to stop its already-running code.');
       } else {
         button.disabled = true;
         button.textContent = 'Loading…';
@@ -379,7 +318,7 @@
       stopMod(id);
       delete installed[id];
       if (!saveInstalled()) return;
-      setStatus(mod.name + ' removed.');
+      setStatus(mod.name + ' removed from the list. Refresh the page to clear its already-running code.');
     }
     render();
   });
