@@ -7,7 +7,7 @@
   'use strict';
 
   var CATALOG_URL = window.STABCLIENT_MOD_CATALOG_URL ||
-    'https://raw.githubusercontent.com/sspeth000/stabclient-mods/main/availablemods.json';
+    'https://raw.githubusercontent.com/sspeth000/stabfish-mods/main/availablemods.json';
   var STORAGE_KEY = 'stabclient.mods.v1';
   var panel = document.getElementById('StabClientMainMenu');
   if (!panel) return;
