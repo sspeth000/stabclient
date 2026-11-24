@@ -8,6 +8,8 @@
 
   var CATALOG_URL = window.STABCLIENT_MOD_CATALOG_URL ||
     'https://raw.githubusercontent.com/sspeth000/stabfish-mods/main/availablemods.json';
+  var CATALOG_API_URL =
+    'https://api.github.com/repos/sspeth000/stabfish-mods/contents/availablemods.json?ref=main';
   var STORAGE_KEY = 'stabclient.mods.v1';
   var panel = document.getElementById('StabClientMainMenu');
   if (!panel) return;
@@ -151,14 +153,40 @@
     });
   }
 
+  async function fetchCatalogData() {
+    var rawResponse = await fetch(CATALOG_URL, {
+      cache: 'no-store',
+      credentials: 'omit'
+    });
+    if (rawResponse.ok) return rawResponse.json();
+
+    // GitHub's Contents API is a fallback if raw.githubusercontent.com is unavailable.
+    var apiResponse = await fetch(CATALOG_API_URL, {
+      cache: 'no-store',
+      credentials: 'omit',
+      headers: { Accept: 'application/vnd.github+json' }
+    });
+    if (!apiResponse.ok) {
+      throw new Error('Catalog request failed (raw: ' + rawResponse.status +
+        ', GitHub API: ' + apiResponse.status + ').');
+    }
+
+    var file = await apiResponse.json();
+    if (file.encoding !== 'base64' || typeof file.content !== 'string') {
+      throw new Error('GitHub returned an unexpected catalog file format.');
+    }
+    var binary = atob(file.content.replace(/\s/g, ''));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
   async function loadCatalog() {
     refreshButton.disabled = true;
     refreshButton.textContent = 'Loading…';
     setStatus('Connecting to the StabClient mod catalog…');
     try {
-      var response = await fetch(CATALOG_URL, { cache: 'no-store', credentials: 'omit' });
-      if (!response.ok) throw new Error('Catalog request failed (' + response.status + ').');
-      var data = await response.json();
+      var data = await fetchCatalogData();
       catalog = normalizeCatalog(data);
       render();
       setStatus('Catalog loaded: ' + catalog.length + ' mod' + (catalog.length === 1 ? '' : 's') + '.');
