@@ -53,7 +53,7 @@
       typeof mod.version === 'string' && mod.version.length <= 24 &&
       typeof mod.description === 'string' && mod.description.length <= 220 &&
       typeof mod.author === 'string' && mod.author.length <= 48 &&
-      typeof mod.manifest === 'string' && validRelativePath(mod.manifest);
+      (mod.manifest === undefined || validRelativePath(mod.manifest));
   }
 
   function validRelativePath(path) {
@@ -78,7 +78,8 @@
         version: mod.version,
         description: mod.description,
         author: mod.author,
-        manifest: mod.manifest,
+        // Older cached catalogs may not include the manifest field yet.
+        manifest: typeof mod.manifest === 'string' ? mod.manifest : 'mods/' + mod.id + '/manifest.json',
         category: typeof mod.category === 'string' ? mod.category.slice(0, 32) : 'Other',
         homepage: typeof mod.homepage === 'string' && /^https:\/\//i.test(mod.homepage) ? mod.homepage : ''
       };
