@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "mods": [
+    {
+      "id": "example-theme",
+      "name": "Example Theme",
+      "version": "1.0.0",
+      "author": "Your name",
+      "description": "An example listing for a client-side appearance customization.",
+      "category": "Appearance",
+      "homepage": "https://github.com/sspeth000/stabclient"
+    }
+  ]
+}
