@@ -998,12 +998,35 @@
       #StabClientMainMenu .sc-welcome{padding:10px;border:1px solid rgba(56,189,248,.22);border-radius:8px;background:rgba(8,47,73,.45)}
       #StabClientMainMenu .sc-welcome strong{font-size:13px}
       #StabClientMainMenu .sc-welcome p{font-size:11px;line-height:1.45;color:#cbd5e1;margin:5px 0 0}
+      #StabClientMainMenu:has([data-sc-page="mods"]:not([hidden])){width:290px;max-height:calc(100vh - 24px);overflow:auto}
+      #StabClientMainMenu .sc-mods-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+      #StabClientMainMenu .sc-mods-top strong{font-size:13px}
+      #StabClientMainMenu .sc-mods-top button{font-size:11px;padding:6px 9px}
+      #StabClientMainMenu .sc-mods-caption{font-size:10px;color:#cbd5e1;margin-top:2px}
+      #StabClientMainMenu #scModsSearch{box-sizing:border-box;width:100%;margin:0 0 7px;padding:7px 8px;border:1px solid #475569;border-radius:6px;background:#0f172a;color:#fff;font:12px Roboto,Arial,sans-serif}
+      #StabClientMainMenu .sc-mods-empty{padding:12px 8px;text-align:center;font-size:11px;color:#cbd5e1;background:rgba(15,23,42,.55);border-radius:7px}
+      #StabClientMainMenu .sc-mod-card{padding:9px;margin:7px 0;border:1px solid rgba(148,163,184,.22);border-radius:8px;background:rgba(15,23,42,.62)}
+      #StabClientMainMenu .sc-mod-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+      #StabClientMainMenu .sc-mod-heading strong{font-size:12px}
+      #StabClientMainMenu .sc-mod-version{font-size:9px;color:#7dd3fc;white-space:nowrap}
+      #StabClientMainMenu .sc-mod-card p{font-size:10px;line-height:1.4;color:#cbd5e1;margin:5px 0}
+      #StabClientMainMenu .sc-mod-meta{font-size:9px;color:#94a3b8}
+      #StabClientMainMenu .sc-mod-actions{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:8px}
+      #StabClientMainMenu .sc-mod-button{font-size:10px!important;padding:5px 7px!important;border-radius:5px!important;background:#334155!important}
+      #StabClientMainMenu .sc-mod-button.primary{background:#0369a1!important}
+      #StabClientMainMenu .sc-mod-button.danger{background:#7f1d1d!important}
+      #StabClientMainMenu .sc-mod-installed{font-size:9px;color:#86efac}
+      #StabClientMainMenu .sc-mod-link{font-size:10px;margin-left:auto}
+      #StabClientMainMenu .sc-mods-note{font-size:9px;line-height:1.4;color:#94a3b8;margin-top:8px}
+      #StabClientMainMenu #scModsRefresh:disabled{opacity:.6;cursor:wait}
+      @media(max-width:600px){#StabClientMainMenu:has([data-sc-page="mods"]:not([hidden])){width:min(290px,calc(100vw - 24px))}}
     </style>
     <div id="StabClientMainMenu" aria-label="StabClient collection tools">
       <div class="sc-head"><span>StabClient Tools</span><button id="scMinimize" type="button" aria-label="Minimize">−</button></div>
       <nav class="sc-tabs" aria-label="StabClient sections">
         <button type="button" data-sc-tab="home" aria-selected="true">Home</button>
         <button type="button" data-sc-tab="unlock" aria-selected="false">Unlocks</button>
+        <button type="button" data-sc-tab="mods" aria-selected="false">Mods</button>
       </nav>
       <div class="sc-body">
         <section class="sc-tab-page" data-sc-page="home">
@@ -1021,6 +1044,21 @@
           <label class="sc-choice"><input type="radio" name="scCollection" value="all" checked> All</label>
           <button id="scApply" class="sc-action" type="button">Apply local unlocks</button>
           <div id="scStatus" class="sc-status" role="status" aria-live="polite">Unlocks affect this browser's local game data only. Account progress and Black Pearls are server-managed.</div>
+        </section>
+        <section class="sc-tab-page" data-sc-page="mods" hidden>
+          <div class="sc-mods-top">
+            <div>
+              <strong>Mod Library</strong>
+              <div class="sc-mods-caption">Browse community-made client customizations.</div>
+            </div>
+            <button id="scModsRefresh" type="button">Refresh</button>
+          </div>
+          <input id="scModsSearch" type="search" placeholder="Search mods…" aria-label="Search mods">
+          <div id="scModsStatus" class="sc-status" role="status" aria-live="polite">Loading catalog…</div>
+          <div id="scModsList" aria-live="polite">
+            <div class="sc-mods-empty">Loading mods…</div>
+          </div>
+          <div class="sc-mods-note">This preview manages the catalog and your installed list. Mod code is not executed in this version.</div>
         </section>
       </div>
     </div>
@@ -1077,6 +1115,7 @@
         setInterval(updateMenuVisibility,500);
       })();
     </script>
+    <script src="mod-loader.js?v=1"></script>
 </body>
 
 </html>
