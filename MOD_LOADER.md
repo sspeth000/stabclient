@@ -1,10 +1,10 @@
 # StabClient Mod Catalog
 
-The first mod-loader version reads a single `repository.json` file from the separate mod repository.
+The first mod-loader version reads a single `availablemods.json` file from the separate mod repository.
 
 ## Catalog format
 
-Copy `mod-repository.example.json` into the mod repository and rename it to `repository.json`.
+Copy `mod-repository.example.json` into the mod repository and rename it to `availablemods.json`.
 
 Required top-level fields:
 
