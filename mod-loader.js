@@ -190,9 +190,15 @@
     return JSON.parse(new TextDecoder().decode(bytes));
   }
 
-  async function fetchModFile(path) {
+  async function fetchModFile(path, relativeTo) {
     if (!validRelativePath(path)) throw new Error('The mod contains an unsafe file path.');
-    var response = await fetch(new URL(path, MOD_BASE_URL).toString(), {
+    var fileUrl = new URL(path, relativeTo || MOD_BASE_URL);
+    var baseUrl = new URL(MOD_BASE_URL);
+    if (fileUrl.origin !== baseUrl.origin ||
+        fileUrl.pathname.indexOf('/sspeth000/stabfish-mods/main/') !== 0) {
+      throw new Error('The mod file path points outside the mod repository.');
+    }
+    var response = await fetch(fileUrl.toString(), {
       cache: 'no-store',
       credentials: 'omit'
     });
@@ -290,7 +296,8 @@
       throw new Error('The mod requests an unsupported permission.');
     }
 
-    var source = await fetchModFile(manifest.entry);
+    var manifestUrl = new URL(mod.manifest, MOD_BASE_URL).toString();
+    var source = await fetchModFile(manifest.entry, manifestUrl);
     var frame = document.createElement('iframe');
     frame.title = 'Isolated mod: ' + mod.name;
     frame.setAttribute('sandbox', 'allow-scripts');
