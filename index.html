@@ -1137,22 +1137,21 @@
       (function(){
         var viewport=document.getElementById('StabClientViewport');
         var page=document.getElementById('StabClientPage');
-        var panel=document.getElementById('StabClientGame');
+        if(!viewport||!page) return;
         function fitPage(){
-          if(!viewport||!page||!panel) return;
-          var panelVisible=window.getComputedStyle(panel).display!=='none';
-          var panelHeight=panelVisible?panel.getBoundingClientRect().height:0;
-          var screenHeight=Math.max(1,window.innerHeight);
-          var availableHeight=Math.max(1,screenHeight-panelHeight);
-          var scale=Math.min(1,availableHeight/screenHeight);
-          viewport.style.height=availableHeight+'px';
-          page.style.width=(window.innerWidth/scale)+'px';
-          page.style.height=screenHeight+'px';
-          page.style.transform='scale('+scale+')';
+          var scale=0.8;
+          var width=Math.max(1,window.innerWidth);
+          var height=Math.max(1,window.innerHeight);
+          viewport.style.width='100%';
+          viewport.style.height='100vh';
+          viewport.style.overflow='hidden';
+          page.style.transform='none';
+          page.style.transformOrigin='top left';
+          page.style.zoom=String(scale);
+          page.style.width=(width/scale)+'px';
+          page.style.height=(height/scale)+'px';
         }
         window.addEventListener('resize',fitPage);
-        new MutationObserver(fitPage).observe(panel,{attributes:true,attributeFilter:['style','class']});
-        setInterval(fitPage,300);
         fitPage();
       })();
     </script>
