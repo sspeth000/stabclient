@@ -65,9 +65,9 @@ Example manifest:
 - Installing a mod saves it locally. Enabling it fetches and validates its manifest and entry script.
 - The entry script runs in a sandboxed iframe with scripts enabled, but without same-origin access or network access.
 - Mods cannot access the parent page's DOM directly.
-- The initial API supports `Mod.createPanel({ title, message })`, gated by the `custom-ui` permission.
-- Disabling or removing a mod destroys its sandbox and any panel it created.
+- Mods currently receive no loader-provided JavaScript APIs. Their scripts run in an isolated iframe and cannot access the parent page's DOM or network.
+- Disabling or removing a mod destroys its sandbox.
 - The loader currently loads the manifest's `entry` script only. The other resource lists are reserved for future CSS, HTML, and asset support.
-- Only the `custom-ui` permission is currently supported. Unknown permissions are rejected.
+- Keep the manifest's `permissions` array empty until specific, narrowly scoped APIs are introduced.
 
 The runtime is an initial foundation. Review community mod code and expand the API deliberately rather than granting unrestricted access to the game page.
