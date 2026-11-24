@@ -139,6 +139,7 @@
 </head>
 
 <body style="margin:0px;">
+    <div id="StabClientViewport"><div id="StabClientPage">
     <!-- PIXI -->
     <canvas id="stage" width="960" height="640" style="width: 100%; height: 100%; position:absolute;"></canvas>
     <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
@@ -669,14 +670,18 @@
     <div id="announcement" class="scroll-left">
     </div>
     <!-- HIDE FOR CRAZYGAMES -->
+    </div></div>
     <div id="preroll"></div>
     <!-- END HIDE FOR CRAZYGAMES -->
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"bb9dabbca1a04a8bbda4656485610673","r":1,"spa":2}' crossorigin="anonymous"></script>
 
     <style>
-      /* Reserve a strip for the horizontal in-game tools dock. */
-      #stage{height:calc(100vh - 150px)!important}
-      #StabClientGame{position:fixed;left:0;right:0;bottom:0;top:auto;transform:none;z-index:99999;width:100%;max-height:150px;overflow-y:auto;box-sizing:border-box;padding:8px 12px;border:1px solid rgba(255,255,255,.22);border-bottom:0;border-radius:12px 12px 0 0;background:rgba(17,24,39,.96);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 -8px 28px rgba(0,0,0,.28);display:none;touch-action:pan-y}
+      /* Scale the complete game page to make room for the full-width tools dock. */
+      html,body{margin:0;width:100%;min-height:100%;overflow-x:hidden}
+      #StabClientViewport{position:relative;width:100%;height:100vh;overflow:hidden}
+      #StabClientPage{position:relative;width:100%;height:100vh;transform-origin:top left}
+      #stage{width:100%!important;height:100%!important}
+      #StabClientGame{position:relative;left:auto;right:auto;top:auto;bottom:auto;transform:none;z-index:99999;width:100%;max-height:190px;overflow-y:auto;box-sizing:border-box;padding:8px 12px;border:1px solid rgba(255,255,255,.22);border-radius:0;background:rgba(17,24,39,.98);color:#fff;font:14px Roboto,Arial,sans-serif;box-shadow:0 -4px 18px rgba(0,0,0,.25);display:none;touch-action:pan-y}
       #StabClientGame .ps-body{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;gap:5px 12px}
       #StabClientGame .ps-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin:0 0 6px}
       #StabClientGame .ps-body>div{min-width:0;margin:0!important}
@@ -685,15 +690,17 @@
       #StabClientGame .ps-body input{box-sizing:border-box;max-width:100%}
       #StabClientGame .ps-body>div[style*="grid-template-columns"]{gap:4px!important}
       #StabClientGame .ps-value{font-variant-numeric:tabular-nums;color:#7dd3fc;font-weight:700}
-      #StabClientGame .ps-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:8px}
       #StabClientGame input{width:100%;accent-color:#38bdf8}
-      #StabClientGame .ps-value{font-variant-numeric:tabular-nums;color:#7dd3fc;font-weight:700}
-      #StabClientGame button{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;border:1px solid rgba(255,255,255,.24);border-radius:50%;background:#334155;color:#fff;padding:0;font-size:18px;line-height:1;cursor:pointer}
-      #StabClientGame.ps-min{width:42px;height:42px;box-sizing:border-box;padding:2px;border:0;border-radius:50%;background:transparent;box-shadow:none}
-      #StabClientGame.ps-min .ps-head{justify-content:center;margin:0;width:100%;height:100%}
+      #StabClientGame button{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;border:1px solid rgba(255,255,255,.24);border-radius:8px;background:#334155;color:#fff;padding:0;font-size:18px;line-height:1;cursor:pointer}
+      #StabClientGame.ps-min{width:100%;height:auto;max-height:none;padding:5px 10px;border:0;border-radius:0;background:#111827;box-shadow:none}
+      #StabClientGame.ps-min .ps-head{justify-content:flex-end;margin:0}
       #StabClientGame.ps-min .ps-head span,#StabClientGame.ps-min .ps-body{display:none}
-      #StabClientGame.ps-min #psMinimize{width:42px;height:42px;flex-basis:42px;border:1px solid rgba(255,255,255,.35);background:#0f172a;box-shadow:0 4px 14px rgba(0,0,0,.35);font-size:25px}
-      @media(max-width:600px){#stage{height:calc(100vh - 205px)!important}#StabClientGame{left:0;right:0;bottom:0;width:100%;max-height:205px;padding:7px 9px}#StabClientGame .ps-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 9px}#StabClientGame .ps-head{margin-bottom:5px}}
+      #StabClientGame.ps-min #psMinimize{width:34px;height:30px;flex-basis:34px;border-radius:8px;background:#0f172a;font-size:22px}
+      @media(max-width:700px){
+        #StabClientGame{max-height:230px;padding:7px 9px}
+        #StabClientGame .ps-body{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 9px}
+        #StabClientGame .ps-head{margin-bottom:5px}
+      }
     </style>
     <div id="StabClientGame" aria-label="StabClient Tools panel">
       <div class="ps-head"><span>Stabfish Client Assist</span><button id="psMinimize" type="button" aria-label="Minimize panel">−</button></div>
@@ -1124,6 +1131,29 @@
         }
         updateMenuVisibility();
         setInterval(updateMenuVisibility,500);
+      })();
+    </script>
+    <script>
+      (function(){
+        var viewport=document.getElementById('StabClientViewport');
+        var page=document.getElementById('StabClientPage');
+        var panel=document.getElementById('StabClientGame');
+        function fitPage(){
+          if(!viewport||!page||!panel) return;
+          var panelVisible=window.getComputedStyle(panel).display!=='none';
+          var panelHeight=panelVisible?panel.getBoundingClientRect().height:0;
+          var screenHeight=Math.max(1,window.innerHeight);
+          var availableHeight=Math.max(1,screenHeight-panelHeight);
+          var scale=Math.min(1,availableHeight/screenHeight);
+          viewport.style.height=availableHeight+'px';
+          page.style.width=(window.innerWidth/scale)+'px';
+          page.style.height=screenHeight+'px';
+          page.style.transform='scale('+scale+')';
+        }
+        window.addEventListener('resize',fitPage);
+        new MutationObserver(fitPage).observe(panel,{attributes:true,attributeFilter:['style','class']});
+        setInterval(fitPage,300);
+        fitPage();
       })();
     </script>
     <script src="mod-loader.js?v=10"></script>
