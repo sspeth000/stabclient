@@ -1,6 +1,6 @@
 /* StabClient Mod Loader
  * Loads manifest-based mods in isolated, script-only iframes.
- * Mods receive a tiny permission-checked API and cannot access the parent DOM.
+ * Mods run in isolated, script-only iframes and cannot access the parent DOM.
  */
 (function () {
   'use strict';
@@ -207,42 +207,6 @@
     return response.text();
   }
 
-  function createModPanel(id, title, message) {
-    var runtime = activeMods[id];
-    if (!runtime) return;
-    if (runtime.panel) runtime.panel.remove();
-
-    var shell = document.createElement('div');
-    shell.setAttribute('role', 'dialog');
-    shell.setAttribute('aria-label', title);
-    shell.style.cssText = 'position:fixed;top:76px;right:16px;z-index:2147483647;width:min(300px,calc(100vw - 32px));box-sizing:border-box;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:#111827;color:#fff;font:13px Roboto,Arial,sans-serif;box-shadow:0 10px 32px rgba(0,0,0,.4);';
-
-    var header = document.createElement('div');
-    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;';
-    var heading = document.createElement('strong');
-    heading.textContent = title;
-    heading.style.cssText = 'font-size:13px;';
-    var close = document.createElement('button');
-    close.type = 'button';
-    close.textContent = '×';
-    close.setAttribute('aria-label', 'Close panel');
-    close.style.cssText = 'border:0;border-radius:6px;background:#334155;color:#fff;width:28px;height:28px;font-size:20px;line-height:1;cursor:pointer;';
-    close.addEventListener('click', function () {
-      shell.remove();
-      if (runtime.panel === shell) runtime.panel = null;
-    });
-    header.appendChild(heading);
-    header.appendChild(close);
-
-    var body = document.createElement('div');
-    body.textContent = message;
-    body.style.cssText = 'color:#cbd5e1;line-height:1.5;overflow-wrap:anywhere;';
-    shell.appendChild(header);
-    shell.appendChild(body);
-    document.body.appendChild(shell);
-    runtime.panel = shell;
-  }
-
   function stopMod(id) {
     var runtime = activeMods[id];
     if (!runtime) return;
@@ -259,21 +223,12 @@
       'window.addEventListener("message",function(event){' +
       'var data=event.data;' +
       'if(event.source!==window.parent||!data||data.type!=="stabclient-init")return;' +
-      'var permissions=Array.isArray(data.permissions)?data.permissions:[];' +
-      'var api=Object.freeze({' +
-      'createPanel:function(options){' +
-      'if(permissions.indexOf("custom-ui")===-1)throw new Error("Missing custom-ui permission.");' +
-      'options=options&&typeof options==="object"?options:{};' +
-      'window.parent.postMessage({type:"create-panel",token:data.token,title:String(options.title||"Mod").slice(0,60),message:String(options.message||"").slice(0,500)},"*");' +
-      '}' +
-      '});' +
-      'Object.defineProperty(window,"Mod",{value:api,configurable:false,writable:false});' +
       'var script=document.createElement("script");' +
       'script.textContent=String(data.source||"");' +
       'document.body.appendChild(script);' +
       '});' +
       '})();' +
-      '<\/script></body></html>';
+      '<\\/script></body></html>';
   }
 
   async function startMod(mod) {
@@ -289,14 +244,6 @@
         !validRelativePath(manifest.entry) || !Array.isArray(manifest.permissions)) {
       throw new Error('The mod manifest is invalid or unsupported.');
     }
-    var supportedPermissions = ['custom-ui'];
-    var permissions = manifest.permissions.filter(function (permission) {
-      return supportedPermissions.indexOf(permission) !== -1;
-    });
-    if (permissions.length !== manifest.permissions.length) {
-      throw new Error('The mod requests an unsupported permission.');
-    }
-
     var manifestUrl = new URL(mod.manifest, MOD_BASE_URL).toString();
     var source = await fetchModFile(manifest.entry, manifestUrl);
     var frame = document.createElement('iframe');
@@ -314,23 +261,11 @@
       frame.contentWindow.postMessage({
         type: 'stabclient-init',
         token: token,
-        source: source,
-        permissions: permissions
+        source: source
       }, '*');
     };
     document.body.appendChild(frame);
   }
-
-  window.addEventListener('message', function (event) {
-    if (!event.data || event.data.type !== 'create-panel') return;
-    var id = Object.keys(activeMods).find(function (key) {
-      return activeMods[key].frame && activeMods[key].frame.contentWindow === event.source &&
-        activeMods[key].token === event.data.token;
-    });
-    if (!id) return;
-    createModPanel(id, String(event.data.title || 'Mod').slice(0, 60),
-      String(event.data.message || '').slice(0, 500));
-  });
 
   async function loadCatalog() {
     refreshButton.disabled = true;
