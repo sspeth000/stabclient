@@ -207,6 +207,39 @@
     return response.text();
   }
 
+  function createManifestPanel(id, panelConfig) {
+    if (!panelConfig || typeof panelConfig !== 'object') return null;
+    var title = typeof panelConfig.title === 'string' ? panelConfig.title.slice(0, 60) : 'Mod';
+    var message = typeof panelConfig.message === 'string' ? panelConfig.message.slice(0, 500) : '';
+    var shell = document.createElement('section');
+    shell.setAttribute('role', 'dialog');
+    shell.setAttribute('aria-label', title);
+    shell.style.cssText = 'position:fixed;top:76px;right:16px;z-index:2147483000;width:min(300px,calc(100vw - 32px));box-sizing:border-box;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:#111827;color:#fff;font:13px Roboto,Arial,sans-serif;box-shadow:0 10px 32px rgba(0,0,0,.4);';
+    var header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;';
+    var heading = document.createElement('strong');
+    heading.textContent = title;
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.textContent = '×';
+    close.setAttribute('aria-label', 'Close panel');
+    close.style.cssText = 'border:0;border-radius:6px;background:#334155;color:#fff;width:28px;height:28px;font-size:20px;line-height:1;cursor:pointer;';
+    close.addEventListener('click', function () {
+      shell.remove();
+      var runtime = activeMods[id];
+      if (runtime && runtime.panel === shell) runtime.panel = null;
+    });
+    header.appendChild(heading);
+    header.appendChild(close);
+    var body = document.createElement('div');
+    body.textContent = message;
+    body.style.cssText = 'color:#cbd5e1;line-height:1.5;overflow-wrap:anywhere;';
+    shell.appendChild(header);
+    shell.appendChild(body);
+    document.body.appendChild(shell);
+    return shell;
+  }
+
   function stopMod(id) {
     var runtime = activeMods[id];
     if (!runtime) return;
@@ -265,6 +298,7 @@
       }, '*');
     };
     document.body.appendChild(frame);
+    activeMods[mod.id].panel = createManifestPanel(mod.id, manifest.panel);
   }
 
   async function loadCatalog() {
