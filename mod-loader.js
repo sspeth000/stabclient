@@ -41,6 +41,20 @@
     }
   }
 
+  // Installed mods always start disabled after a full page reload.
+  function disableModsOnStartup() {
+    var changed = false;
+    Object.keys(installed).forEach(function (id) {
+      if (installed[id] && installed[id].enabled) {
+        installed[id].enabled = false;
+        changed = true;
+      }
+    });
+    if (changed) saveInstalled();
+  }
+
+  disableModsOnStartup();
+
   function setStatus(message, isError) {
     status.textContent = message;
     status.style.color = isError ? '#fca5a5' : '#cbd5e1';
@@ -211,10 +225,10 @@
     if (!panelConfig || typeof panelConfig !== 'object') return null;
     var title = typeof panelConfig.title === 'string' ? panelConfig.title.slice(0, 60) : 'Mod';
     var message = typeof panelConfig.message === 'string' ? panelConfig.message.slice(0, 500) : '';
-    var shell = document.createElement('section');
+    var shell = document.createElement('div');
     shell.setAttribute('role', 'dialog');
     shell.setAttribute('aria-label', title);
-    shell.style.cssText = 'position:fixed;top:76px;right:16px;z-index:2147483000;width:min(300px,calc(100vw - 32px));box-sizing:border-box;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:#111827;color:#fff;font:13px Roboto,Arial,sans-serif;box-shadow:0 10px 32px rgba(0,0,0,.4);';
+    shell.style.cssText = 'all:initial;display:block;visibility:visible;opacity:1;position:fixed;top:76px;right:16px;z-index:2147483647;width:min(300px,calc(100vw - 32px));box-sizing:border-box;padding:14px;border:1px solid rgba(255,255,255,.22);border-radius:12px;background:#111827;color:#fff;font:13px Roboto,Arial,sans-serif;box-shadow:0 10px 32px rgba(0,0,0,.4);pointer-events:auto;';
     var header = document.createElement('div');
     header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px;';
     var heading = document.createElement('strong');
@@ -261,7 +275,7 @@
       'document.body.appendChild(script);' +
       '});' +
       '})();' +
-      '<\\/script></body></html>';
+      '<\/script></body></html>';
   }
 
   async function startMod(mod) {
@@ -311,18 +325,6 @@
       render();
       setStatus('Catalog loaded: ' + catalog.length + ' mod' + (catalog.length === 1 ? '' : 's') + '.');
 
-      var enabled = catalog.filter(function (mod) {
-        return installed[mod.id] && installed[mod.id].enabled;
-      });
-      for (var i = 0; i < enabled.length; i++) {
-        try {
-          await startMod(enabled[i]);
-        } catch (error) {
-          installed[enabled[i].id].enabled = false;
-          saveInstalled();
-          setStatus(enabled[i].name + ' could not start: ' + error.message, true);
-        }
-      }
       render();
     } catch (error) {
       catalog = [];
