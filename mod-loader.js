@@ -224,8 +224,19 @@
   function stopMod(id) {
     var runtime = activeMods[id];
     if (!runtime) return;
+
+    // Ask this specific mod to clean up its own UI and resources.
+    // Cleanup is optional; the loader still removes its script element.
+    if (runtime.api && typeof runtime.api.close === 'function') {
+      try {
+        runtime.api.close();
+      } catch (error) {
+        console.error('[StabClient] Mod cleanup failed for "' + id + '":', error);
+      }
+    }
+
     // Removing a script element does not undo code that has already executed.
-    // Unsandboxed mods remain active until the page is reloaded.
+    // A page reload is still needed to fully stop any code the mod did not clean up.
     if (runtime.script) runtime.script.remove();
     delete activeMods[id];
   }
@@ -245,13 +256,27 @@
     }
     var manifestUrl = new URL(mod.manifest, MOD_BASE_URL).toString();
     var source = await fetchModFile(manifest.entry, manifestUrl);
+    // Each mod receives its own Mod object as a function parameter.
+    // This keeps Mod.close private to that mod instead of sharing a global API object.
+    var api = {};
+    var apiKey = '__stabclient_mod_api_' + mod.id;
+    window[apiKey] = api;
+
     // Mods are trusted first-party code and execute in the page's main JavaScript context.
-    // They create and manage their own UI using the ordinary DOM APIs.
+    // The wrapper supplies the mod-specific API while preserving ordinary DOM access.
     var script = document.createElement('script');
     script.dataset.stabclientMod = mod.id;
-    script.textContent = source + '\n//# sourceURL=stabclient-mod-' + mod.id + '.js';
-    activeMods[mod.id] = { script: script };
+    script.textContent =
+      '(function (Mod) {\n' +
+      source + '\n' +
+      '}).call(window, window[' + JSON.stringify(apiKey) + ']);\n' +
+      'delete window[' + JSON.stringify(apiKey) + '];\n' +
+      '//# sourceURL=stabclient-mod-' + mod.id + '.js';
+    activeMods[mod.id] = { script: script, api: api };
     (document.head || document.documentElement).appendChild(script);
+    // Normally the injected script deletes this temporary bridge synchronously.
+    // Clear it here as a fallback if execution was interrupted.
+    try { delete window[apiKey]; } catch (_) { window[apiKey] = undefined; }
   }
 
   async function loadCatalog() {
@@ -292,7 +317,7 @@
         stopMod(id);
         installed[id].enabled = false;
         if (!saveInstalled()) return;
-        setStatus(mod.name + ' marked disabled. Refresh the page to stop its already-running code.');
+        setStatus(mod.name + ' disabled. Its Mod.close() cleanup was called; refresh to fully stop any remaining code.');
       } else {
         button.disabled = true;
         button.textContent = 'Loading…';
