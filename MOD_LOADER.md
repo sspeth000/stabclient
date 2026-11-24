@@ -56,7 +56,7 @@ Example manifest:
     "html": [],
     "assets": []
   },
-  "permissions": ["custom-ui"]
+  "permissions": []
 }
 ```
 
@@ -70,4 +70,4 @@ Example manifest:
 - The loader currently loads the manifest's `entry` script only. The other resource lists are reserved for future CSS, HTML, and asset support.
 - Keep the manifest's `permissions` array empty until specific, narrowly scoped APIs are introduced.
 
-The runtime is an initial foundation. Review community mod code and expand the API deliberately rather than granting unrestricted access to the game page.
+The runtime is an initial foundation. Mods currently have no loader-provided APIs and remain isolated from the game page.
