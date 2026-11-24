@@ -1,34 +1,73 @@
-# StabClient Mod Catalog
+# StabClient Mod Loader
 
-The first mod-loader version reads a single `availablemods.json` file from `sspeth000/stabfish-mods` at `availablemods.json`.
+The mod loader reads `availablemods.json` from the separate `sspeth000/stabfish-mods` repository.
 
 ## Catalog format
 
-The live catalog is maintained in `https://github.com/sspeth000/stabfish-mods/blob/main/availablemods.json`.
+Each catalog entry contains the normal listing metadata plus a `manifest` path relative to the repository root:
 
-Required top-level fields:
+```json
+{
+  "schemaVersion": 1,
+  "mods": [
+    {
+      "id": "test-mod",
+      "name": "Test Mod",
+      "version": "1.0.0",
+      "author": "Bash",
+      "description": "A simple test mod.",
+      "category": "Testing",
+      "homepage": "https://github.com/sspeth000/stabfish-mods",
+      "manifest": "mods/test-mod/manifest.json"
+    }
+  ]
+}
+```
 
-- `schemaVersion`: currently `1`.
-- `mods`: an array of mod listing objects.
+## Mod folder format
 
-Required fields on each listing:
+A mod has its own directory. The manifest declares its entry point, resources, and requested permissions.
 
-- `id`: unique lowercase ID using letters, numbers, and hyphens (2–48 characters).
-- `name`: display name (up to 60 characters).
-- `version`: version string.
-- `author`: creator name (up to 48 characters).
-- `description`: short description (up to 220 characters).
+```text
+mods/
+  test-mod/
+    manifest.json
+    main.js
+    styles.css
+    panel.html
+    assets/
+      icon.png
+```
 
-Optional fields:
+Example manifest:
 
-- `category`: short category label.
-- `homepage`: HTTPS project page.
+```json
+{
+  "manifestVersion": 1,
+  "id": "test-mod",
+  "name": "Test Mod",
+  "version": "1.0.0",
+  "author": "Bash",
+  "description": "A simple test mod.",
+  "entry": "main.js",
+  "resources": {
+    "scripts": ["main.js"],
+    "styles": [],
+    "html": [],
+    "assets": []
+  },
+  "permissions": ["custom-ui"]
+}
+```
 
-## What this version does
+## Runtime behavior
 
-- Downloads and validates catalog metadata.
-- Displays searchable mod cards.
-- Saves install, enable, disable, and remove choices in browser local storage.
-- Uses text-only DOM rendering for catalog content.
+- Installing a mod saves it locally. Enabling it fetches and validates its manifest and entry script.
+- The entry script runs in a sandboxed iframe with scripts enabled, but without same-origin access or network access.
+- Mods cannot access the parent page's DOM directly.
+- The initial API supports `Mod.createPanel({ title, message })`, gated by the `custom-ui` permission.
+- Disabling or removing a mod destroys its sandbox and any panel it created.
+- The loader currently loads the manifest's `entry` script only. The other resource lists are reserved for future CSS, HTML, and asset support.
+- Only the `custom-ui` permission is currently supported. Unknown permissions are rejected.
 
-**Important:** this first version does not download or execute mod JavaScript. The enabled flag is currently a saved preference only. A later runtime should use a documented, permission-limited API and an isolated sandbox before any community code can run.
+The runtime is an initial foundation. Review community mod code and expand the API deliberately rather than granting unrestricted access to the game page.
