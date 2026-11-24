@@ -1,10 +1,10 @@
 # StabClient Mod Catalog
 
-The first mod-loader version reads a single `availablemods.json` file from the separate mod repository.
+The first mod-loader version reads a single `availablemods.json` file from `sspeth000/stabfish-mods` at `availablemods.json`.
 
 ## Catalog format
 
-Copy `mod-repository.example.json` into the mod repository and rename it to `availablemods.json`.
+The live catalog is maintained in `https://github.com/sspeth000/stabfish-mods/blob/main/availablemods.json`.
 
 Required top-level fields:
 
