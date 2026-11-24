@@ -318,7 +318,9 @@
       stopMod(id);
       delete installed[id];
       if (!saveInstalled()) return;
-      setStatus(mod.name + ' removed from the list. Refresh the page to clear its already-running code.');
+      setStatus(mod.name + ' removed. Refreshing page…');
+      window.location.reload();
+      return;
     }
     render();
   });
