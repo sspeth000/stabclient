@@ -250,9 +250,12 @@
       throw new Error('Manifest error: ' + (error.message || 'Could not read manifest.'));
     }
 
+    // The manifest only identifies the mod and its main entry script.
+    // Additional files are owned and loaded by the mod itself; legacy "resources"
+    // fields, if present, are intentionally ignored.
     if (!manifest || manifest.manifestVersion !== 1 || manifest.id !== mod.id ||
         !validRelativePath(manifest.entry) || !Array.isArray(manifest.permissions)) {
-      throw new Error('The mod manifest is invalid or unsupported.');
+      throw new Error('The mod manifest is invalid. Expected manifestVersion 1, a matching id, an entry path, and a permissions array.');
     }
     var manifestUrl = new URL(mod.manifest, MOD_BASE_URL).toString();
     var source = await fetchModFile(manifest.entry, manifestUrl);
