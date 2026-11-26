@@ -1,0 +1,18 @@
+STABCLIENT RESTORE CHECKPOINT
+=============================
+
+Repository: sspeth000/stabclient
+Branch: main
+
+BASE COMMIT (recorded before mod development):
+9238a1336901b27f138a4047dbcfdc8ff583fd61
+
+Commit URL:
+https://github.com/sspeth000/stabclient/commit/9238a1336901b27f138a4047dbcfdc8ff583fd61
+
+RESTORE NOTE:
+This is the exact main-branch commit to use as the baseline when undoing
+temporary StabClient changes made during mod development.
+
+Prefer restoring changed files to this commit's contents in a new
+revert commit. Do not force-push or move the main branch backward.
