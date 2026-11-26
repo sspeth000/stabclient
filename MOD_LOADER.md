@@ -1,6 +1,6 @@
 # StabClient Mod Loader
 
-The mod loader reads `availablemods.json` from the separate `sspeth000/stabfish-mods` repository.
+The mod loader reads `availablemods.json` from the separate `sspeth000/stabclient-mods` repository.
 
 ## Catalog format
 
@@ -17,7 +17,7 @@ Each catalog entry contains the normal listing metadata plus a `manifest` path r
       "author": "Bash",
       "description": "A simple test mod.",
       "category": "Testing",
-      "homepage": "https://github.com/sspeth000/stabfish-mods",
+      "homepage": "https://github.com/sspeth000/stabclient-mods",
       "manifest": "mods/test-mod/manifest.json"
     }
   ]
