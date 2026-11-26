@@ -6,10 +6,10 @@
   'use strict';
 
   var CATALOG_URL = window.STABCLIENT_MOD_CATALOG_URL ||
-    'https://raw.githubusercontent.com/sspeth000/stabfish-mods/main/availablemods.json';
+    'https://raw.githubusercontent.com/sspeth000/stabclient-mods/main/availablemods.json';
   var CATALOG_API_URL =
-    'https://api.github.com/repos/sspeth000/stabfish-mods/contents/availablemods.json?ref=main';
-  var MOD_BASE_URL = 'https://raw.githubusercontent.com/sspeth000/stabfish-mods/main/';
+    'https://api.github.com/repos/sspeth000/stabclient-mods/contents/availablemods.json?ref=main';
+  var MOD_BASE_URL = 'https://raw.githubusercontent.com/sspeth000/stabclient-mods/main/';
   var STORAGE_KEY = 'stabclient.mods.v1';
   var panel = document.getElementById('StabClientMainMenu');
   if (!panel) return;
@@ -210,7 +210,7 @@
     var fileUrl = new URL(path, relativeTo || MOD_BASE_URL);
     var baseUrl = new URL(MOD_BASE_URL);
     if (fileUrl.origin !== baseUrl.origin ||
-        fileUrl.pathname.indexOf('/sspeth000/stabfish-mods/main/') !== 0) {
+        fileUrl.pathname.indexOf('/sspeth000/stabclient-mods/main/') !== 0) {
       throw new Error('The mod file path points outside the mod repository.');
     }
     var response = await fetch(fileUrl.toString(), {
